@@ -19,7 +19,7 @@ type UserClaims struct {
 }
 
 func Login(c echo.Context) error {
-	email := c.FormValue("username")
+	email := c.FormValue("email")
 	password := c.FormValue("password")
 
 	db, err := database.NewConnection()
@@ -34,7 +34,7 @@ func Login(c echo.Context) error {
 	}
 	
 	if err := bcrypt.CompareHashAndPassword(user.Password, []byte(password)); err != nil {
-		return c.String(http.StatusUnauthorized, "The Username or Password is Incorrect. Try again.")
+		return c.String(http.StatusUnauthorized, "The Email or Password is Incorrect. Try again.")
 	}
 	
 	claims := &UserClaims{
