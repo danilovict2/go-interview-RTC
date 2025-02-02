@@ -9,10 +9,10 @@ import (
 
 type User struct {
 	UUID      uuid.UUID `gorm:"primaryKey" json:"uuid"`
-	FirstName string    `json:"first_name"`
-	LastName  string    `json:"last_name"`
-	Email     string    `gorm:"uniqueIndex" json:"email"`
-	Password  []byte
+	FirstName string    `json:"first_name" validate:"required"`
+	LastName  string    `json:"last_name" validate:"required"`
+	Email     string    `gorm:"uniqueIndex" json:"email" validate:"required,email"`
+	Password  []byte	`validate:"required,min=8"`
 
 	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"updated_at"`

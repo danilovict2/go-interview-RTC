@@ -25,5 +25,8 @@ func main() {
 
 	e.POST("/login", controllers.Login)
 
+	u := e.Group("/users")
+	u.POST("/store", controllers.UserStore)
+
 	e.Logger.Fatal(e.Start(os.Getenv("LISTEN_ADDR")))
 }

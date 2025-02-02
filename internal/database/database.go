@@ -10,7 +10,7 @@ import (
 
 func NewConnection() (*gorm.DB, error) {
 	dsn := os.Getenv("DATABASE_DSN")
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{TranslateError: true})
 	migrate(db)
 
 	return db, err
