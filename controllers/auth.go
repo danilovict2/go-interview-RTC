@@ -51,7 +51,14 @@ func Login(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, "Whoops, something went wrong!")
 	}
 
+	expires, err := token.Claims.GetExpirationTime();
+	if err != nil {
+		c.Logger().Error(err)
+		return c.String(http.StatusInternalServerError, "Whoops, something went wrong!")
+	}
+
 	return c.JSON(http.StatusOK, echo.Map{
 		"token": t,
+		"expires": expires.Time.UTC().Format(http.TimeFormat),
 	})
 }

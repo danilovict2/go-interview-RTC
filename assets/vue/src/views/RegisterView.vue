@@ -97,7 +97,9 @@ const onSubmit = handleSubmit((values) => {
             "Content-Type": "application/x-www-form-urlencoded"
         }
     })
-        .then(resp => console.log(resp.data))
-        .catch(err => toast.error(err.response.data))
+        .then(resp => {
+            document.cookie = `jwt=${resp.data.token};expires=${resp.data.expires};path=/;secure;`;
+        })
+        .catch(err => toast.error(err.response.data));
 })
 </script>
