@@ -79,6 +79,7 @@ import {
 import { Input } from '@/components/ui/input'
 import axios from 'axios'
 import { toast } from 'vue3-toastify'
+import router from '@/router'
 
 const formSchema = toTypedSchema(z.object({
     first_name: z.string().min(1).max(50),
@@ -99,6 +100,7 @@ const onSubmit = handleSubmit((values) => {
     })
         .then(resp => {
             document.cookie = `jwt=${resp.data.token};expires=${resp.data.expires};path=/;secure;`;
+            router.push({ name: 'home' })
         })
         .catch(err => toast.error(err.response.data));
 })
