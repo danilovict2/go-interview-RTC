@@ -24,7 +24,6 @@ func main() {
 	e.File("/", "assets/vue/dist/index.html")
 
 	e.POST("/login", controllers.Login)
-
 	u := e.Group("/users")
 	u.POST("/store", controllers.UserStore)
 
