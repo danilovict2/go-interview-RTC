@@ -6,7 +6,9 @@ import (
 	"os"
 
 	"github.com/danilovict2/go-interview-RTC/controllers"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/joho/godotenv"
+	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -28,12 +30,21 @@ func main() {
 		CookieSameSite: http.SameSiteStrictMode,
 	}))
 
+    jwtConfig := echojwt.Config{
+		NewClaimsFunc: func(c echo.Context) jwt.Claims {
+			return new(controllers.UserClaims)
+		},
+		SigningKey: []byte(os.Getenv("JWT_SECRET")),
+	}
+
 	e.Static("/", "assets/vue/dist")
 	e.File("/", "assets/vue/dist/index.html")
 
 	e.POST("/login", controllers.Login)
+
 	u := e.Group("/users")
 	u.POST("/store", controllers.UserStore)
+	u.GET("/:uuid", controllers.UserGet, echojwt.WithConfig(jwtConfig))
 
 	e.Logger.Fatal(e.Start(os.Getenv("LISTEN_ADDR")))
 }
