@@ -24,8 +24,7 @@ func Login(c echo.Context) error {
 
 	db, err := database.NewConnection()
 	if err != nil {
-		c.Logger().Error(err)
-		return c.String(http.StatusInternalServerError, "Whoops, something went wrong!")
+		return HandleGracefully(err, c)
 	}
 
 	user := &models.User{}
@@ -47,14 +46,12 @@ func Login(c echo.Context) error {
 	
 	t, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
 	if err != nil {
-		c.Logger().Error(err)
-		return c.String(http.StatusInternalServerError, "Whoops, something went wrong!")
+		return HandleGracefully(err, c)
 	}
 
 	expires, err := token.Claims.GetExpirationTime();
 	if err != nil {
-		c.Logger().Error(err)
-		return c.String(http.StatusInternalServerError, "Whoops, something went wrong!")
+		return HandleGracefully(err, c)
 	}
 
 	return c.JSON(http.StatusOK, echo.Map{
