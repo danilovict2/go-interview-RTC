@@ -11,19 +11,21 @@
 
 
             <div class="flex items-center space-x-4 ml-auto">
-                <DashboardButton />
+                <DashboardButton v-show="authStore.authUser"/>
                 <ModeToggle />
-                <UserIcon />
+                <ProfileDropdown v-show="authStore.authUser"/>
             </div>
         </div>
     </nav>
 </template>
 
 <script setup>
-import { CodeIcon, UserIcon } from 'lucide-vue-next';
+import { CodeIcon } from 'lucide-vue-next';
 import { RouterLink } from 'vue-router';
 import DashboardButton from './DashboardButton.vue';
 import ModeToggle from './ModeToggle.vue';
+import { useAuthStore } from '@/stores/auth';
+import ProfileDropdown from './ProfileDropdown.vue';
 
-
+const authStore = useAuthStore()
 </script>
