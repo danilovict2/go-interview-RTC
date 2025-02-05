@@ -1,7 +1,6 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 import { defineStore } from "pinia";
-import { toast } from "vue3-toastify";
 
 export const useAuthStore = defineStore('auth', {
     state: () => {
@@ -18,10 +17,11 @@ export const useAuthStore = defineStore('auth', {
                 }
             })
                 .then(resp => {
-                    this.authUser = resp.data
+                    this.authUser = resp.data;
                 })
                 .catch(err => {
-                    toast.error(err)
+                    Cookies.remove('jwt');
+                    this.authUser = null;
                 })
         }
     }
