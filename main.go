@@ -30,7 +30,7 @@ func main() {
 		CookieSameSite: http.SameSiteStrictMode,
 	}))
 
-    jwtConfig := echojwt.Config{
+	jwtConfig := echojwt.Config{
 		NewClaimsFunc: func(c echo.Context) jwt.Claims {
 			return new(controllers.UserClaims)
 		},

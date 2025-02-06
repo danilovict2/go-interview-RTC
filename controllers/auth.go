@@ -31,11 +31,11 @@ func Login(c echo.Context) error {
 	if err := db.Where("email = ?", email).First(user).Error; err != nil {
 		return c.String(http.StatusUnauthorized, "User with this email doesn't exist!")
 	}
-	
+
 	if err := bcrypt.CompareHashAndPassword(user.Password, []byte(password)); err != nil {
 		return c.String(http.StatusUnauthorized, "The Email or Password is Incorrect. Try again.")
 	}
-	
+
 	claims := &UserClaims{
 		user.UUID,
 		jwt.RegisteredClaims{
@@ -43,19 +43,19 @@ func Login(c echo.Context) error {
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	
+
 	t, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
 	if err != nil {
 		return HandleGracefully(err, c)
 	}
 
-	expires, err := token.Claims.GetExpirationTime();
+	expires, err := token.Claims.GetExpirationTime()
 	if err != nil {
 		return HandleGracefully(err, c)
 	}
 
 	return c.JSON(http.StatusOK, echo.Map{
-		"token": t,
+		"token":   t,
 		"expires": expires.Time.UTC().Format(http.TimeFormat),
 	})
 }
