@@ -8,12 +8,13 @@ import (
 )
 
 type User struct {
-	UUID      uuid.UUID `gorm:"primaryKey" json:"uuid"`
-	FirstName string    `json:"first_name" validate:"required"`
-	LastName  string    `json:"last_name" validate:"required"`
-	Email     string    `gorm:"uniqueIndex" json:"email" validate:"required,email"`
-	Password  []byte    `validate:"required,min=8" json:"-"`
-	Role      string    `json:"role" gorm:"default:candidate"`
+	UUID       uuid.UUID    `json:"uuid" gorm:"primaryKey"`
+	FirstName  string       `json:"first_name" validate:"required"`
+	LastName   string       `json:"last_name" validate:"required"`
+	Email      string       `json:"email" gorm:"uniqueIndex" validate:"required,email"`
+	Password   []byte       `json:"-" validate:"required,min=8"`
+	Role       string       `json:"role" gorm:"default:candidate"`
+	Interviews *[]Interview `json:"interviews" gorm:"many2many:interview_attendees"`
 
 	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"updated_at"`
