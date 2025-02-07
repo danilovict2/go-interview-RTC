@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/danilovict2/go-interview-RTC/controllers"
+	"github.com/danilovict2/go-interview-RTC/internal/database"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/joho/godotenv"
 	echojwt "github.com/labstack/echo-jwt/v4"
@@ -16,6 +17,15 @@ import (
 func main() {
 	if err := godotenv.Load(); err != nil {
 		log.Fatal(err)
+	}
+
+	db, err := database.NewConnection()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	api := controllers.APIConfig{
+		DB: db,
 	}
 
 	e := echo.New()
@@ -40,11 +50,12 @@ func main() {
 	e.Static("/", "assets/vue/dist")
 	e.File("/", "assets/vue/dist/index.html")
 
-	e.POST("/login", controllers.Login)
+	e.POST("/login", api.Login)
 
 	u := e.Group("/users")
-	u.POST("/store", controllers.UserStore)
-	u.GET("/:uuid", controllers.UserGet, echojwt.WithConfig(jwtConfig))
+	u.POST("/store", api.UserStore)
+	u.GET("/:uuid", api.UserGet, echojwt.WithConfig(jwtConfig))
+
 
 	e.Logger.Fatal(e.Start(os.Getenv("LISTEN_ADDR")))
 }

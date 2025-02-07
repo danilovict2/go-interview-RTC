@@ -5,7 +5,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/danilovict2/go-interview-RTC/internal/database"
 	"github.com/danilovict2/go-interview-RTC/models"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
@@ -18,17 +17,12 @@ type UserClaims struct {
 	jwt.RegisteredClaims
 }
 
-func Login(c echo.Context) error {
+func (cfg *APIConfig) Login(c echo.Context) error {
 	email := c.FormValue("email")
 	password := c.FormValue("password")
 
-	db, err := database.NewConnection()
-	if err != nil {
-		return HandleGracefully(err, c)
-	}
-
 	user := &models.User{}
-	if err := db.Where("email = ?", email).First(user).Error; err != nil {
+	if err := cfg.DB.Where("email = ?", email).First(user).Error; err != nil {
 		return c.String(http.StatusUnauthorized, "User with this email doesn't exist!")
 	}
 
