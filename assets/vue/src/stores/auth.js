@@ -10,19 +10,19 @@ export const useAuthStore = defineStore('auth', {
     },
 
     actions: {
-        loadAuthUser() {
-            axios.get("/users/me", {
-                headers: {
-                    "Authorization": `Bearer ${Cookies.get('jwt')}`
-                }
-            })
-                .then(resp => {
-                    this.authUser = resp.data;
-                })
-                .catch(err => {
-                    Cookies.remove('jwt');
-                    this.authUser = null;
-                })
+        async loadAuthUser() {
+            try {
+                const { data } = await axios.get("/users/me", {
+                    headers: {
+                        "Authorization": `Bearer ${Cookies.get('jwt')}`
+                    }
+                });
+                
+                this.authUser = data;
+            } catch (err) {
+                Cookies.remove('jwt');
+                this.authUser = null;
+            }
         }
     }
 });

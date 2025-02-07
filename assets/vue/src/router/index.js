@@ -26,14 +26,13 @@ const router = createRouter({
     ],
 })
 
-router.beforeEach((to, from, next) => {
-    const jwt = Cookies.get('jwt');
+router.beforeEach(async (to, from, next) => {
     const authStore = useAuthStore();
-    authStore.loadAuthUser();
+    await authStore.loadAuthUser();
 
-    if (to.meta.requiresAuth && !jwt) {
+    if (to.meta.requiresAuth && !authStore.authUser) {
         next('/login');
-    } else if (!to.meta.requiresAuth && jwt) {
+    } else if (!to.meta.requiresAuth && authStore.authUser) {
         next('/');
     } else {
         next();
