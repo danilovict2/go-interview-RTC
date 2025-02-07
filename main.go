@@ -40,6 +40,16 @@ func main() {
 		CookieSameSite: http.SameSiteStrictMode,
 	}))
 
+    e.HTTPErrorHandler = func(err error, c echo.Context) {
+        if he, ok := err.(*echo.HTTPError); ok && he.Code == http.StatusNotFound {
+			// Instead of returning a 404, serve index.html so that Vue Router can handle the client-side route.
+			c.File("assets/vue/dist/index.html")
+			return
+		}
+
+		c.Echo().DefaultHTTPErrorHandler(err, c)
+    }
+
 	jwtConfig := echojwt.Config{
 		NewClaimsFunc: func(c echo.Context) jwt.Claims {
 			return new(controllers.UserClaims)
