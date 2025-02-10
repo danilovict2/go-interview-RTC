@@ -18,7 +18,7 @@ jobs:
               with:
                 go-version: "1.23.4"
 
-            - name: Format code
+            - name: Format Go code
               run:  test -z $(go fmt ./...)
             
             - name: Install staticcheck
@@ -26,3 +26,14 @@ jobs:
             
             - name: Run staticcheck
               run:  staticcheck ./...
+            
+            - name: Set up node
+              uses: actions/setup-node@v4
+              with:
+                node-version: "22.13.1"
+            
+            - name: Format Vue code
+              run:  test -z $(npm --prefix ./assets/vue/ run format)
+            
+            - name: Run eslint
+              run:  npm --prefix ./assets/vue/ run lint
