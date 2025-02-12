@@ -7,7 +7,7 @@ import router from '@/router'
 import Button from './ui/button/Button.vue'
 import { toast } from 'vue3-toastify'
 
-defineProps({
+const { call } = defineProps({
     call: Object,
 })
 
@@ -18,6 +18,7 @@ const endCall = async () => {
         router.push({ name: 'home' })
         toast.success('The meeting ended for everyone')
     } catch (error) {
+        console.log(error);
         toast.error('Failed to end the meeting')
     }
 }
