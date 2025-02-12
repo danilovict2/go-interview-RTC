@@ -6,7 +6,6 @@ import (
 	"os"
 
 	"github.com/danilovict2/go-interview-RTC/controllers"
-	"github.com/danilovict2/go-interview-RTC/internal/database"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/joho/godotenv"
 	echojwt "github.com/labstack/echo-jwt/v4"
@@ -19,13 +18,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	db, err := database.NewConnection()
+	api, err := controllers.NewAPIConfig()
 	if err != nil {
-		log.Fatal(err)
-	}
-
-	api := controllers.APIConfig{
-		DB: db,
+		log.Fatal("Error creating api config:", err)
 	}
 
 	e := echo.New()
@@ -61,6 +56,7 @@ func main() {
 	e.File("/", "assets/vue/dist/index.html")
 
 	e.POST("/login", api.Login)
+	e.GET("/stream/token", api.StreamNewToken, echojwt.WithConfig(jwtConfig))
 
 	u := e.Group("/users")
 	u.POST("/store", api.UserStore)
