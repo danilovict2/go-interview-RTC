@@ -1,6 +1,7 @@
 package database
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/danilovict2/go-interview-RTC/models"
@@ -17,6 +18,11 @@ func NewConnection() (*gorm.DB, error) {
 }
 
 func migrate(db *gorm.DB) {
-	db.AutoMigrate(&models.User{})
-	db.AutoMigrate(&models.Interview{})
+	if err := db.AutoMigrate(&models.User{}); err != nil {
+		fmt.Printf("Error migrating User model: %v\n", err)
+	}
+
+	if err := db.AutoMigrate(&models.Interview{}); err != nil {
+		fmt.Printf("Error migrating Interview model: %v\n", err)
+	}
 }

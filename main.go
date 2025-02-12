@@ -38,7 +38,9 @@ func main() {
 	e.HTTPErrorHandler = func(err error, c echo.Context) {
 		if he, ok := err.(*echo.HTTPError); ok && he.Code == http.StatusNotFound {
 			// Instead of returning a 404, serve index.html so that Vue Router can handle the client-side route.
-			c.File("assets/vue/dist/index.html")
+			if err := c.File("assets/vue/dist/index.html"); err != nil {
+				c.Echo().DefaultHTTPErrorHandler(err, c)
+			}
 			return
 		}
 
