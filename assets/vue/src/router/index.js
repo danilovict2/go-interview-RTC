@@ -1,7 +1,6 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import Cookies from 'js-cookie'
-import { useAuthStore } from '@/stores/auth'
+import { createRouter, createWebHistory } from 'vue-router';
+import HomeView from '../views/HomeView.vue';
+import { useAuthStore } from '@/stores/auth';
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
@@ -10,8 +9,8 @@ const router = createRouter({
             name: 'home',
             component: HomeView,
             meta: {
-                requiresAuth: true
-            }
+                requiresAuth: true,
+            },
         },
         {
             path: '/register',
@@ -23,21 +22,28 @@ const router = createRouter({
             name: 'login',
             component: () => import('../views/LoginView.vue'),
         },
+        {
+            path: '/meeting/:id',
+            name: 'meeting',
+            component: () => import('../views/MeetingView.vue'),
+            meta: {
+                requiresAuth: true,
+            },
+        },
     ],
-})
+});
 
-router.beforeEach((to, from, next) => {
-    const jwt = Cookies.get('jwt');
+router.beforeEach(async (to, from, next) => {
     const authStore = useAuthStore();
-    authStore.loadAuthUser();
+    await authStore.loadAuthUser();
 
-    if (to.meta.requiresAuth && !jwt) {
+    if (to.meta.requiresAuth && !authStore.authUser) {
         next('/login');
-    } else if (!to.meta.requiresAuth && jwt) {
+    } else if (!to.meta.requiresAuth && authStore.authUser) {
         next('/');
     } else {
         next();
     }
-})
+});
 
-export default router
+export default router;

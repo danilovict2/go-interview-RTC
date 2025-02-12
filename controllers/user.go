@@ -4,7 +4,6 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/danilovict2/go-interview-RTC/internal/database"
 	"github.com/danilovict2/go-interview-RTC/models"
 	"github.com/go-playground/validator/v10"
 	"github.com/golang-jwt/jwt/v5"
@@ -14,7 +13,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func UserStore(c echo.Context) error {
+func (cfg *APIConfig) UserStore(c echo.Context) error {
 	user := models.User{
 		UUID:      uuid.New(),
 		FirstName: c.FormValue("first_name"),
@@ -35,34 +34,24 @@ func UserStore(c echo.Context) error {
 		return HandleGracefully(err, c)
 	}
 
-	db, err := database.NewConnection()
-	if err != nil {
-		return HandleGracefully(err, c)
-	}
-
-	result := db.Create(&user)
+	result := cfg.DB.Create(&user)
 	if errors.Is(result.Error, gorm.ErrDuplicatedKey) {
 		return c.String(http.StatusBadRequest, "User with this email already exists.")
 	} else if result.Error != nil {
 		return HandleGracefully(err, c)
 	}
 
-	return Login(c)
+	return cfg.Login(c)
 }
 
-func UserGet(c echo.Context) error {
+func (cfg *APIConfig) UserGet(c echo.Context) error {
 	uuid := c.Param("uuid")
 	if uuid == "me" {
 		uuid = uuidFromJWT(c)
 	}
 
-	db, err := database.NewConnection()
-	if err != nil {
-		return HandleGracefully(err, c)
-	}
-
 	user := models.User{}
-	err = db.First(&user, "uuid = ?", uuid).Error
+	err := cfg.DB.First(&user, "uuid = ?", uuid).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return c.JSON(http.StatusNotFound, echo.Map{
 			"error": "User not found",

@@ -2,9 +2,12 @@
     <DropdownMenu>
         <DropdownMenuTrigger as-child>
             <Button variant="ghost" size="sm">
-                <img v-if="authStore.authUser"
+                <img
+                    v-if="authStore.authUser"
                     :src="`https://api.dicebear.com/9.x/initials/svg/seed=${authStore.authUser.first_name}-${authStore.authUser.last_name}`"
-                    alt="avatar" class="size-8 rounded-full" />
+                    alt="avatar"
+                    class="size-8 rounded-full"
+                />
                 <UserIcon v-else />
             </Button>
         </DropdownMenuTrigger>
@@ -50,9 +53,9 @@ import { LogIn, LogOut, UserIcon, UserPlus } from 'lucide-vue-next';
 const authStore = useAuthStore();
 
 const logout = () => {
-    Cookies.remove('jwt')
+    Cookies.remove('jwt');
     authStore.$reset();
 
-    router.push({ name: 'login' })
-}
+    router.push({ name: 'login' });
+};
 </script>

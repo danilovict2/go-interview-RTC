@@ -7,14 +7,29 @@
                     {{ interview.startDate }}
                 </div>
 
-                <Badge :variant="status === 'live' ? 'default' : status === 'upcoming' ? 'secondary' : 'outline'">
-                    {{ status === "live" ? "Live Now" : status === "upcoming" ? "Upcoming" : "Completed" }}
+                <Badge
+                    :variant="
+                        status === 'live'
+                            ? 'default'
+                            : status === 'upcoming'
+                              ? 'secondary'
+                              : 'outline'
+                    "
+                >
+                    {{
+                        status === 'live'
+                            ? 'Live Now'
+                            : status === 'upcoming'
+                              ? 'Upcoming'
+                              : 'Completed'
+                    }}
                 </Badge>
             </div>
 
             <CardTitle>{{ interview.title }}</CardTitle>
 
-            <CardDescription v-show="interview.description !== ''" class="line-clamp-2">{{ interview.description }}
+            <CardDescription v-show="interview.description !== ''" class="line-clamp-2"
+                >{{ interview.description }}
             </CardDescription>
         </CardHeader>
 
@@ -22,7 +37,6 @@
             <Button v-show="status === 'live'" class="w-full" @click="console.log('join meeting')">
                 Join Meeting
             </Button>
-
 
             <Button variant="outline" class="w-full" disabled v-show="status === 'upcoming'">
                 Waiting to Start
@@ -41,9 +55,9 @@ import CardDescription from './ui/card/CardDescription.vue';
 import CardContent from './ui/card/CardContent.vue';
 import Button from './ui/button/Button.vue';
 
-const status = "live"
+const status = 'live';
 
 defineProps({
     interview: Object,
-})
+});
 </script>

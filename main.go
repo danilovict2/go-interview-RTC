@@ -18,6 +18,11 @@ func main() {
 		log.Fatal(err)
 	}
 
+	api, err := controllers.NewAPIConfig()
+	if err != nil {
+		log.Fatal("Error creating api config:", err)
+	}
+
 	e := echo.New()
 	e.Use(middleware.RequestID())
 	e.Use(middleware.Logger())
@@ -30,6 +35,18 @@ func main() {
 		CookieSameSite: http.SameSiteStrictMode,
 	}))
 
+	e.HTTPErrorHandler = func(err error, c echo.Context) {
+		if he, ok := err.(*echo.HTTPError); ok && he.Code == http.StatusNotFound {
+			// Instead of returning a 404, serve index.html so that Vue Router can handle the client-side route.
+			if err := c.File("assets/vue/dist/index.html"); err != nil {
+				c.Echo().DefaultHTTPErrorHandler(err, c)
+			}
+			return
+		}
+
+		c.Echo().DefaultHTTPErrorHandler(err, c)
+	}
+
 	jwtConfig := echojwt.Config{
 		NewClaimsFunc: func(c echo.Context) jwt.Claims {
 			return new(controllers.UserClaims)
@@ -40,11 +57,12 @@ func main() {
 	e.Static("/", "assets/vue/dist")
 	e.File("/", "assets/vue/dist/index.html")
 
-	e.POST("/login", controllers.Login)
+	e.POST("/login", api.Login)
+	e.GET("/stream/token", api.StreamNewToken, echojwt.WithConfig(jwtConfig))
 
 	u := e.Group("/users")
-	u.POST("/store", controllers.UserStore)
-	u.GET("/:uuid", controllers.UserGet, echojwt.WithConfig(jwtConfig))
+	u.POST("/store", api.UserStore)
+	u.GET("/:uuid", api.UserGet, echojwt.WithConfig(jwtConfig))
 
 	e.Logger.Fatal(e.Start(os.Getenv("LISTEN_ADDR")))
 }
