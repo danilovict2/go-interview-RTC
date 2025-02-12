@@ -15,17 +15,9 @@ let untrack = null;
 let unbind = null;
 
 onMounted(() => {
-    untrack = call.trackElementVisibility(
-        video.value,
-        participant.sessionId,
-        "videoTrack",
-    );
+    untrack = call.trackElementVisibility(video.value, participant.sessionId, 'videoTrack');
 
-    unbind = call.bindVideoElement(
-        video.value,
-        participant.sessionId,
-        "videoTrack",
-    );
+    unbind = call.bindVideoElement(video.value, participant.sessionId, 'videoTrack');
 });
 
 onUnmounted(() => {

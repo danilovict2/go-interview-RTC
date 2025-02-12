@@ -8,10 +8,16 @@
                         <p class="text-sm text-muted-foreground">Make sure you look good!</p>
                     </div>
 
-                    <div class="mt-4 flex-1 min-h-[400px] rounded-xl overflow-hidden bg-muted/50 border relative">
+                    <div
+                        class="mt-4 flex-1 min-h-[400px] rounded-xl overflow-hidden bg-muted/50 border relative"
+                    >
                         <div class="absolute inset-0">
-                            <VideoPreview :camera="call.camera" :is-camera-enabled="isCameraEnabled"
-                                :microphone="call.microphone" class="h-full w-full" />
+                            <VideoPreview
+                                :camera="call.camera"
+                                :is-camera-enabled="isCameraEnabled"
+                                :microphone="call.microphone"
+                                class="h-full w-full"
+                            />
                         </div>
                     </div>
                 </Card>
@@ -28,7 +34,8 @@
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center gap-3">
                                         <div
-                                            class="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                                            class="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center"
+                                        >
                                             <Camera class="h-5 w-5 text-primary" />
                                         </div>
                                         <div>
@@ -38,14 +45,17 @@
                                             </p>
                                         </div>
                                     </div>
-                                    <Switch :checked="isCameraEnabled"
-                                        @update:checked="isCameraEnabled = !isCameraEnabled" />
+                                    <Switch
+                                        :checked="isCameraEnabled"
+                                        @update:checked="isCameraEnabled = !isCameraEnabled"
+                                    />
                                 </div>
 
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center gap-3">
                                         <div
-                                            class="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                                            class="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center"
+                                        >
                                             <Mic class="h-5 w-5 text-primary" />
                                         </div>
                                         <div>
@@ -55,26 +65,35 @@
                                             </p>
                                         </div>
                                     </div>
-                                    <Switch :checked="isMicEnabled" @update:checked="isMicEnabled = !isMicEnabled" />
+                                    <Switch
+                                        :checked="isMicEnabled"
+                                        @update:checked="isMicEnabled = !isMicEnabled"
+                                    />
                                 </div>
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center gap-3">
                                         <div
-                                            class="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                                            class="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center"
+                                        >
                                             <Settings class="h-5 w-5 text-primary" />
                                         </div>
                                         <div>
                                             <p class="font-medium">Settings</p>
-                                            <p class="text-sm text-muted-foreground">Configure devices</p>
+                                            <p class="text-sm text-muted-foreground">
+                                                Configure devices
+                                            </p>
                                         </div>
                                     </div>
                                     <DeviceSettings :call="call" />
                                 </div>
                             </div>
                             <div class="space-y-3 mt-8">
-                                <Button class="w-full" size="lg" @click.once="handleJoin">Join Meeting</Button>
+                                <Button class="w-full" size="lg" @click.once="handleJoin"
+                                    >Join Meeting</Button
+                                >
                                 <p class="text-xs text-center text-muted-foreground">
-                                    Do not worry, our team is super friendly! We want you to succeed. 🎉
+                                    Do not worry, our team is super friendly! We want you to
+                                    succeed. 🎉
                                 </p>
                             </div>
                         </div>
@@ -86,13 +105,13 @@
 </template>
 
 <script setup>
-import { Camera, Mic, Settings } from 'lucide-vue-next'
-import Card from './ui/card/Card.vue'
-import Switch from './ui/switch/Switch.vue'
-import Button from './ui/button/Button.vue'
-import VideoPreview from './VideoPreview.vue'
-import DeviceSettings from './DeviceSettings.vue'
-import { useCallControlls } from '@/composables/callControls'
+import { Camera, Mic, Settings } from 'lucide-vue-next';
+import Card from './ui/card/Card.vue';
+import Switch from './ui/switch/Switch.vue';
+import Button from './ui/button/Button.vue';
+import VideoPreview from './VideoPreview.vue';
+import DeviceSettings from './DeviceSettings.vue';
+import { useCallControlls } from '@/composables/callControls';
 
 const emit = defineEmits(['setup-complete']);
 
@@ -103,7 +122,7 @@ const { call } = defineProps({
 const { isCameraEnabled, isMicEnabled } = useCallControlls(call);
 
 const handleJoin = async () => {
-    await call.join()
-    emit('setup-complete')
-}
+    await call.join();
+    emit('setup-complete');
+};
 </script>

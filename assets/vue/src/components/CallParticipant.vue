@@ -1,8 +1,11 @@
 <template>
     <CallParticipantVideo v-if="hasVideo(participant)" :call="call" :participant="participant" />
-    <div class="grid place-items-center border border-border h-[300px]" v-else>Video is disabled</div>
+    <div class="grid place-items-center border border-border h-[300px]" v-else>
+        Video is disabled
+    </div>
     <div
-        class="absolute border border-border bottom-0 left-0 right-0 bg-background bg-opacity-50 text-sm p-1 text-center rounded-b-lg">
+        class="absolute border border-border bottom-0 left-0 right-0 bg-background bg-opacity-50 text-sm p-1 text-center rounded-b-lg"
+    >
         {{ participant.name }}
     </div>
 
@@ -23,7 +26,7 @@ const audio = useTemplateRef('audio');
 let unbind = null;
 
 onMounted(() => {
-    unbind = (call.bindAudioElement(audio.value, participant.sessionId));
+    unbind = call.bindAudioElement(audio.value, participant.sessionId);
 });
 
 onUnmounted(() => {

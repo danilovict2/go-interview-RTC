@@ -1,10 +1,16 @@
 <template>
     <div class="flex items-center gap-2 flex-wrap justify-center px-4">
-        <Button @click="isMicEnabled = !isMicEnabled" :variant="isMicEnabled ? 'outline' : 'destructive'">
+        <Button
+            @click="isMicEnabled = !isMicEnabled"
+            :variant="isMicEnabled ? 'outline' : 'destructive'"
+        >
             <Mic v-if="isMicEnabled" />
             <MicOff v-else />
         </Button>
-        <Button @click="isCameraEnabled = !isCameraEnabled" :variant="isCameraEnabled ? 'outline' : 'destructive'">
+        <Button
+            @click="isCameraEnabled = !isCameraEnabled"
+            :variant="isCameraEnabled ? 'outline' : 'destructive'"
+        >
             <Camera v-if="isCameraEnabled" />
             <CameraOff v-else />
         </Button>
@@ -22,7 +28,7 @@ import Button from './ui/button/Button.vue';
 defineEmits(['leave']);
 
 const { call } = defineProps({
-    call: Object
+    call: Object,
 });
 
 const { isCameraEnabled, isMicEnabled } = useCallControlls(call);

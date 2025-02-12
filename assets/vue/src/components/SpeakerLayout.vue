@@ -6,7 +6,11 @@
         </div>
 
         <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
-            <div class="rounded-lg relative" v-for="(p, index) in participants.slice(1)" :key="index">
+            <div
+                class="rounded-lg relative"
+                v-for="(p, index) in participants.slice(1)"
+                :key="index"
+            >
                 <CallParticipant :participant="p" :call="call" />
             </div>
         </div>
@@ -19,7 +23,7 @@ import CallParticipant from './CallParticipant.vue';
 
 const { call, participants } = defineProps({
     call: Object,
-    participants: Array
+    participants: Array,
 });
 
 const viewport = useTemplateRef('viewport');

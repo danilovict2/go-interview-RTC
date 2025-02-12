@@ -16,7 +16,7 @@ const preview = useTemplateRef('preview');
 
 camera.state.mediaStream$.subscribe((mediaStream) => {
     if (preview.value) {
-        preview.value.srcObject = mediaStream
+        preview.value.srcObject = mediaStream;
     }
 });
 </script>

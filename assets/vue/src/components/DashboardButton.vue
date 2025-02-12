@@ -5,7 +5,6 @@
             Dashboard
         </Button>
     </RouterLink>
-
 </template>
 
 <script setup>
