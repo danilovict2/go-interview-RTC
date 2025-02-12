@@ -32,8 +32,17 @@ jobs:
               with:
                 node-version: "22.13.1"
             
+            - name: Install dependencies
+              run:  npm --prefix ./assets/vue/ ci
+
             - name: Format Vue code
-              run:  test -z $(npm --prefix ./assets/vue/ run format)
+              run:  npm --prefix ./assets/vue/ run format
+
+            - name: Commit formatted code
+              uses: stefanzweifel/git-auto-commit-action@v4
+              with:
+                commit_message: "Update: format Vue code"
+                branch: ${{ github.head_ref }}
             
             - name: Run eslint
               run:  npm --prefix ./assets/vue/ run lint
