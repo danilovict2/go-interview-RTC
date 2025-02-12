@@ -85,6 +85,8 @@ const subscription = call.state.participants$.subscribe((p) => {
 });
 
 onUnmounted(() => {
-    subscription.unsubscribe();
+    if (subscription) {
+        subscription.unsubscribe();
+    }
 });
 </script>
