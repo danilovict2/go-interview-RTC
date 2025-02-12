@@ -1,5 +1,5 @@
 <template>
-    <Loading v-if="isCallLoading"></Loading>
+    <AppLoading v-if="isCallLoading"></AppLoading>
     <div v-else-if="callExists">
         <MeetingSetup
             @setup-complete="isSetupComplete = true"
@@ -15,7 +15,7 @@
 </template>
 
 <script setup>
-import Loading from '@/components/Loading.vue';
+import AppLoading from '@/components/AppLoading.vue';
 import MeetingRoom from '@/components/MeetingRoom.vue';
 import MeetingSetup from '@/components/MeetingSetup.vue';
 import { useStreamStore } from '@/stores/stream';

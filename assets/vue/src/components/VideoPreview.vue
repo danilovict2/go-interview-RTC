@@ -6,10 +6,9 @@
 <script setup>
 import { useTemplateRef } from 'vue';
 
-const { camera, isCameraEnabled, microphone } = defineProps({
+const { camera, isCameraEnabled } = defineProps({
     camera: Object,
     isCameraEnabled: Boolean,
-    microphone: Object,
 });
 
 const preview = useTemplateRef('preview');

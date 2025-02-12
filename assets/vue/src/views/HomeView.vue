@@ -41,7 +41,7 @@
             <div class="mt-8">
                 <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3" v-if="interviews.length > 0">
                     <MeetingCard
-                        v-for="(interview, index) in interviews"
+                        v-for="interview in interviews"
                         :key="interview.id"
                         :interview="interview"
                     />

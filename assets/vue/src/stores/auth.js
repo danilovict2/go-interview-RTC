@@ -19,7 +19,7 @@ export const useAuthStore = defineStore('auth', {
                 });
 
                 this.authUser = data;
-            } catch (err) {
+            } catch {
                 Cookies.remove('jwt');
                 this.authUser = null;
             }
