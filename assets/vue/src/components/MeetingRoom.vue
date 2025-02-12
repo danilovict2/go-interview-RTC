@@ -4,7 +4,7 @@
             <ResizablePanel :default-size="35" :min-size="25" :max-size="100" class="relative">
                 <div class="absolute inset-0">
                     <PaginatedGridLayout v-if="layout === 'grid'" :call="call" :participants="participants"/>
-                    <SpeakerLayout v-else />
+                    <SpeakerLayout :call="call" :participants="participants" v-else />
 
                     <div v-show="showParticipants"
                         class="absolute right-0 top-0 h-full w-[300px] bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border border-border">
@@ -66,7 +66,7 @@ import PaginatedGridLayout from './PaginatedGridLayout.vue'
 import SpeakerLayout from './SpeakerLayout.vue'
 import { LayoutList, Users } from 'lucide-vue-next'
 import ResizableHandle from './ui/resizable/ResizableHandle.vue'
-import { publishingVideo } from '@stream-io/video-client'
+import { publishingVideo, speakerLayoutSortPreset } from '@stream-io/video-client'
 
 const { call } = defineProps({
     call: Object,
@@ -77,10 +77,14 @@ const layout = ref('grid');
 const participants = ref([]);
 
 const subscription = call.state.participants$.subscribe((p) => {
-    participants.value = p.sort(publishingVideo);
+    if (layout.value === 'grid') {
+        participants.value = p.sort(publishingVideo);
+    } else {
+        participants.value = p.sort(speakerLayoutSortPreset)
+    }
 });
 
 onUnmounted(() => {
     subscription.unsubscribe();
-})
+});
 </script>
