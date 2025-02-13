@@ -65,6 +65,10 @@
             </ResizablePanel>
 
             <ResizableHandle with-handle />
+
+            <ResizablePanel :default-size="65" :min-size="25">
+                <InterviewWorkspace />
+            </ResizablePanel>
         </ResizablePanelGroup>
     </div>
 </template>
@@ -86,6 +90,7 @@ import SpeakerLayout from './SpeakerLayout.vue';
 import { LayoutList, Users } from 'lucide-vue-next';
 import ResizableHandle from './ui/resizable/ResizableHandle.vue';
 import { publishingVideo, speakerLayoutSortPreset } from '@stream-io/video-client';
+import InterviewWorkspace from './InterviewWorkspace.vue';
 
 const { call } = defineProps({
     call: Object,
