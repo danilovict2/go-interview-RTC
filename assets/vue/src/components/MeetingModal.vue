@@ -6,11 +6,7 @@
             </DialogHeader>
 
             <div class="space-y-4 pt-4">
-                <Input
-                    v-if="isJoinMeeting"
-                    placeholder="Paste meeting link here..."
-                    v-model="meetingURL"
-                />
+                <Input v-if="isJoinMeeting" placeholder="Paste meeting link here..." v-model="meetingURL" />
 
                 <div class="flex justify-end gap-3">
                     <Button variant="outline" @click="$emit('close')"> Cancel </Button>
@@ -31,17 +27,9 @@ import DialogContent from './ui/dialog/DialogContent.vue';
 import DialogHeader from './ui/dialog/DialogHeader.vue';
 import { Input } from './ui/input';
 import router from '@/router';
-
-const meetingURL = ref('');
-
-const startMeeting = () => {
-    if (isJoinMeeting) {
-        const meetingID = meetingURL.value.split('/').pop();
-        router.push(`/meeting/${meetingID}`);
-    } else {
-        console.log('create meeting');
-    }
-};
+import axios from 'axios';
+import { toast } from 'vue3-toastify';
+import Cookies from 'js-cookie';
 
 defineEmits(['close']);
 
@@ -50,4 +38,33 @@ const { isJoinMeeting } = defineProps({
     title: String,
     isJoinMeeting: Boolean,
 });
+
+const meetingURL = ref('');
+
+const startMeeting = () => {
+    if (isJoinMeeting) {
+        const meetingID = meetingURL.value.split('/').pop();
+        router.push(`/meetings/${meetingID}`);
+    } else {
+        axios
+            .post(
+                '/interviews/store',
+                {
+                    title: 'Instant Meeting',
+                    description: 'Instant Meeting',
+                    startTime: new Date().toUTCString(),
+                },
+                {
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Authorization': `Bearer ${Cookies.get('jwt')}`,
+                    },
+                },
+            )
+            .then((resp) => {
+                router.push(`/meetings/${resp.data.stream_call_id}`);
+            })
+            .catch((err) => toast.error(err.response.data.message));
+    }
+};
 </script>

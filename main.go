@@ -64,5 +64,8 @@ func main() {
 	u.POST("/store", api.UserStore)
 	u.GET("/:uuid", api.UserGet, echojwt.WithConfig(jwtConfig))
 
+	i := e.Group("/interviews")
+	i.POST("/store", api.InterviewStore, echojwt.WithConfig(jwtConfig))
+
 	e.Logger.Fatal(e.Start(os.Getenv("LISTEN_ADDR")))
 }

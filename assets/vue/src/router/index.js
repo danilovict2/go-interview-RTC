@@ -23,7 +23,7 @@ const router = createRouter({
             component: () => import('../views/LoginView.vue'),
         },
         {
-            path: '/meeting/:id',
+            path: '/meetings/:id',
             name: 'meeting',
             component: () => import('../views/MeetingView.vue'),
             meta: {

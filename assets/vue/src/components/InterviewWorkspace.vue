@@ -4,7 +4,9 @@
             <ScrollArea class="h-full">
                 <div class="p-6">
                     <div class="max-w-4xl mx-auto space-y-6">
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div
+                            class="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                        >
                             <div class="space-y-1">
                                 <div class="flex items-center gap-2">
                                     <h2 class="text-2xl font-semibold tracking-tight">
@@ -21,7 +23,11 @@
                                         <SelectValue placeholder="Select question" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem v-for="q in questions" :key="q.titleSlug" :value="q.titleSlug">
+                                        <SelectItem
+                                            v-for="q in questions"
+                                            :key="q.titleSlug"
+                                            :value="q.titleSlug"
+                                        >
                                             {{ q.title }}
                                         </SelectItem>
                                     </SelectContent>
@@ -34,7 +40,11 @@
                                         </SelectValue>
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem v-for="lang in supportedLanguages" :key="lang[0]" :value="lang[0]">
+                                        <SelectItem
+                                            v-for="lang in supportedLanguages"
+                                            :key="lang[0]"
+                                            :value="lang[0]"
+                                        >
                                             <div class="flex items-center gap-2">
                                                 {{ lang[1] }}
                                             </div>
@@ -54,8 +64,13 @@
 
         <ResizablePanel :default-size="60" :max-size="100">
             <div class="h-full relative">
-                <VueMonacoEditor height="100%" :default-language="language" :language="language" theme="vs-dark"
-                    v-model:value="code" :options="{
+                <VueMonacoEditor
+                    height="100%"
+                    :default-language="language"
+                    :language="language"
+                    theme="vs-dark"
+                    v-model:value="code"
+                    :options="{
                         minimap: { enabled: false },
                         fontSize: 18,
                         lineNumbers: 'on',
@@ -64,7 +79,8 @@
                         padding: { top: 16, bottom: 16 },
                         wordWrap: 'on',
                         wrappingIndent: 'indent',
-                    }">
+                    }"
+                >
                 </VueMonacoEditor>
             </div>
         </ResizablePanel>
@@ -95,7 +111,12 @@ const questions = [
     },
 ];
 
-const supportedLanguages = [['go', 'Go'], ['python', 'Python'], ['cpp', 'C++'], ['javascript', 'Javascript']];
+const supportedLanguages = [
+    ['go', 'Go'],
+    ['python', 'Python'],
+    ['cpp', 'C++'],
+    ['javascript', 'Javascript'],
+];
 
 const selectedQuestion = ref(questions[0]);
 const language = ref(supportedLanguages[0][0]);
