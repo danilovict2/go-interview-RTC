@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -54,8 +53,6 @@ func (cfg *APIConfig) InterviewStore(c echo.Context) error {
 		return HandleGracefully(err, c)
 	}
 
-	fmt.Println(resp.Data.Call)
-
 	interview := models.Interview{
 		Title:        c.FormValue("title"),
 		Description:  c.FormValue("description"),
@@ -65,9 +62,9 @@ func (cfg *APIConfig) InterviewStore(c echo.Context) error {
 		Attendees:    []models.User{user},
 	}
 
-	/*if err := cfg.DB.Create(&interview).Error; err != nil {
+	if err := cfg.DB.Create(&interview).Error; err != nil {
 		return HandleGracefully(err, c)
-	}*/
+	}
 
 	return c.JSON(http.StatusOK, interview)
 }

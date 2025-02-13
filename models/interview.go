@@ -9,8 +9,9 @@ import (
 type Status string
 
 const (
-	STATUS_LIVE     Status = "live"
-	STATUS_UPCOMING Status = "upcoming"
+	STATUS_LIVE      Status = "live"
+	STATUS_UPCOMING  Status = "upcoming"
+	STATUS_COMPLETED Status = "completed"
 )
 
 type Interview struct {
