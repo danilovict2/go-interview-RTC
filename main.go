@@ -66,6 +66,7 @@ func main() {
 
 	i := e.Group("/interviews")
 	i.POST("/store", api.InterviewStore, echojwt.WithConfig(jwtConfig))
+	i.PATCH("/:stream-call-id/end", api.InterviewEnd, echojwt.WithConfig(jwtConfig))
 
 	e.Logger.Fatal(e.Start(os.Getenv("LISTEN_ADDR")))
 }

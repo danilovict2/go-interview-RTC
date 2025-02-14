@@ -68,3 +68,60 @@ func (cfg *APIConfig) InterviewStore(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, interview)
 }
+
+func (cfg *APIConfig) InterviewEnd(c echo.Context) error {
+	streamCallID := c.Param("stream-call-id")
+	interview := models.Interview{}
+	err := cfg.DB.First(&interview, "stream_call_id = ?", streamCallID).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return c.JSON(http.StatusNotFound, echo.Map{
+			"error": "Interview not found",
+		})
+	} else if err != nil {
+		return HandleGracefully(err, c)
+	}
+
+	uuid := uuidFromJWT(c)
+	user := models.User{}
+	err = cfg.DB.First(&user, "uuid = ?", uuid).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return c.JSON(http.StatusNotFound, echo.Map{
+			"error": "User not found",
+		})
+	} else if err != nil {
+		return HandleGracefully(err, c)
+	}
+
+	attendees := make([]models.User, 0)
+	if err := cfg.DB.Model(&interview).Association("Attendees").Find(&attendees); err != nil {
+		return HandleGracefully(err, c)
+	}
+
+	isAttendee := false
+	for _, attendee := range attendees {
+		if attendee.UUID == user.UUID {
+			isAttendee = true
+			break
+		}
+	}
+
+	if user.Role != models.ROLE_INTERVIEWER || !isAttendee {
+		return c.JSON(http.StatusUnauthorized, echo.Map{
+			"error": "You can not modify this resource",
+		})
+	}
+
+	endTime, err := time.Parse(http.TimeFormat, c.FormValue("endTime"))
+	if err != nil {
+		return HandleGracefully(err, c)
+	}
+
+	interview.Status = models.STATUS_COMPLETED
+	interview.EndTime = &endTime
+
+	if err := cfg.DB.Save(interview).Error; err != nil {
+		return HandleGracefully(err, c)
+	}
+
+	return c.JSON(http.StatusOK, interview)
+}
