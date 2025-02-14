@@ -1,5 +1,5 @@
 <template>
-    <video class="object-contain h-[300px]" ref="video"></video>
+    <video class="object-contain h-[300px] w-full" ref="video"></video>
 </template>
 
 <script setup>

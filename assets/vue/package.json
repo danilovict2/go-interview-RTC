@@ -11,6 +11,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@guolao/vue-monaco-editor": "^1.5.4",
     "@radix-icons/vue": "^1.0.0",
     "@stream-io/video-client": "^1.16.3",
     "@vee-validate/zod": "^4.15.0",

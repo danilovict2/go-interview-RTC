@@ -6,6 +6,8 @@
 import router from '@/router';
 import Button from './ui/button/Button.vue';
 import { toast } from 'vue3-toastify';
+import axios from 'axios';
+import Cookies from 'js-cookie';
 
 const { call } = defineProps({
     call: Object,
@@ -13,6 +15,18 @@ const { call } = defineProps({
 
 const endCall = async () => {
     try {
+        await axios.patch(
+            `/interviews/${call.id}/end`,
+            {
+                endTime: new Date().toUTCString(),
+            },
+            {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    Authorization: `Bearer ${Cookies.get('jwt')}`,
+                },
+            },
+        );
         await call.endCall();
 
         router.push({ name: 'home' });

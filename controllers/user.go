@@ -4,9 +4,9 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/danilovict2/go-interview-RTC/internal/repository"
 	"github.com/danilovict2/go-interview-RTC/models"
 	"github.com/go-playground/validator/v10"
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
@@ -34,10 +34,10 @@ func (cfg *APIConfig) UserStore(c echo.Context) error {
 		return HandleGracefully(err, c)
 	}
 
-	result := cfg.DB.Create(&user)
-	if errors.Is(result.Error, gorm.ErrDuplicatedKey) {
+	err = cfg.DB.Create(&user).Error
+	if errors.Is(err, gorm.ErrDuplicatedKey) {
 		return c.String(http.StatusBadRequest, "User with this email already exists.")
-	} else if result.Error != nil {
+	} else if err != nil {
 		return HandleGracefully(err, c)
 	}
 
@@ -47,11 +47,11 @@ func (cfg *APIConfig) UserStore(c echo.Context) error {
 func (cfg *APIConfig) UserGet(c echo.Context) error {
 	uuid := c.Param("uuid")
 	if uuid == "me" {
-		uuid = uuidFromJWT(c)
+		uuid = c.Get("uuid").(string)
 	}
 
-	user := models.User{}
-	err := cfg.DB.First(&user, "uuid = ?", uuid).Error
+	r := repository.NewUserRepository(cfg.DB)
+	user, err := r.FindByUUID(uuid)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return c.JSON(http.StatusNotFound, echo.Map{
 			"error": "User not found",
@@ -61,11 +61,4 @@ func (cfg *APIConfig) UserGet(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, user)
-}
-
-func uuidFromJWT(c echo.Context) string {
-	token := c.Get("user").(*jwt.Token)
-	claims := token.Claims.(*UserClaims)
-
-	return claims.UUID.String()
 }

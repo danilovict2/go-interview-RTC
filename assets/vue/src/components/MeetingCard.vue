@@ -34,13 +34,11 @@
         </CardHeader>
 
         <CardContent>
-            <Button v-show="status === 'live'" class="w-full" @click="console.log('join meeting')">
+            <Button v-if="status === 'live'" class="w-full" @click="console.log('join meeting')">
                 Join Meeting
             </Button>
 
-            <Button variant="outline" class="w-full" disabled v-show="status === 'upcoming'">
-                Waiting to Start
-            </Button>
+            <Button v-else variant="outline" class="w-full" disabled> Waiting to Start </Button>
         </CardContent>
     </Card>
 </template>

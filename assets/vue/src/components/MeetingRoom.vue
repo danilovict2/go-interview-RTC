@@ -57,7 +57,10 @@
                                 >
                                     <Users class="size-4" />
                                 </Button>
-                                <EndCallButton :call="call" />
+                                <EndCallButton
+                                    :call="call"
+                                    v-if="authUser.role === 'interviewer'"
+                                />
                             </div>
                         </div>
                     </div>
@@ -65,6 +68,10 @@
             </ResizablePanel>
 
             <ResizableHandle with-handle />
+
+            <ResizablePanel :default-size="65" :min-size="25">
+                <InterviewWorkspace />
+            </ResizablePanel>
         </ResizablePanelGroup>
     </div>
 </template>
@@ -86,6 +93,8 @@ import SpeakerLayout from './SpeakerLayout.vue';
 import { LayoutList, Users } from 'lucide-vue-next';
 import ResizableHandle from './ui/resizable/ResizableHandle.vue';
 import { publishingVideo, speakerLayoutSortPreset } from '@stream-io/video-client';
+import InterviewWorkspace from './InterviewWorkspace.vue';
+import { useAuthStore } from '@/stores/auth';
 
 const { call } = defineProps({
     call: Object,
@@ -94,6 +103,7 @@ const { call } = defineProps({
 const showParticipants = ref(false);
 const layout = ref('grid');
 const participants = ref([]);
+const authUser = useAuthStore().authUser;
 
 const subscription = call.state.participants$.subscribe((p) => {
     if (layout.value === 'grid') {

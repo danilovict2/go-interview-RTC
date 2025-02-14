@@ -7,7 +7,7 @@ import (
 )
 
 func (cfg *APIConfig) StreamNewToken(c echo.Context) error {
-	uuid := uuidFromJWT(c)
+	uuid := c.Get("uuid").(string)
 	token, err := cfg.StreamClient.CreateToken(uuid)
 	if err != nil {
 		return HandleGracefully(err, c)

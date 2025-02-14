@@ -6,11 +6,12 @@ import (
 	"os"
 
 	"github.com/danilovict2/go-interview-RTC/controllers"
+	"github.com/danilovict2/go-interview-RTC/internal/middleware"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/joho/godotenv"
 	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
+	mw "github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
@@ -23,11 +24,13 @@ func main() {
 		log.Fatal("Error creating api config:", err)
 	}
 
+	mdw := middleware.New(api.DB)
+
 	e := echo.New()
-	e.Use(middleware.RequestID())
-	e.Use(middleware.Logger())
-	e.Use(middleware.Recover())
-	e.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
+	e.Use(mw.RequestID())
+	e.Use(mw.Logger())
+	e.Use(mw.Recover())
+	e.Use(mw.CSRFWithConfig(mw.CSRFConfig{
 		TokenLookup:    "cookie:_csrf",
 		CookiePath:     "/",
 		CookieSecure:   true,
@@ -58,11 +61,15 @@ func main() {
 	e.File("/", "assets/vue/dist/index.html")
 
 	e.POST("/login", api.Login)
-	e.GET("/stream/token", api.StreamNewToken, echojwt.WithConfig(jwtConfig))
+	e.GET("/stream/token", api.StreamNewToken, echojwt.WithConfig(jwtConfig), mdw.UUIDFromJWT)
 
 	u := e.Group("/users")
 	u.POST("/store", api.UserStore)
-	u.GET("/:uuid", api.UserGet, echojwt.WithConfig(jwtConfig))
+	u.GET("/:uuid", api.UserGet, echojwt.WithConfig(jwtConfig), mdw.UUIDFromJWT)
+
+	i := e.Group("/interviews")
+	i.POST("/store", api.InterviewStore, echojwt.WithConfig(jwtConfig), mdw.UserFromJWT)
+	i.PATCH("/:stream-call-id/end", api.InterviewEnd, echojwt.WithConfig(jwtConfig), mdw.UserFromJWT)
 
 	e.Logger.Fatal(e.Start(os.Getenv("LISTEN_ADDR")))
 }
