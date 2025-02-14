@@ -59,6 +59,7 @@
 import ActionCard from '@/components/ActionCard.vue';
 import MeetingCard from '@/components/MeetingCard.vue';
 import MeetingModal from '@/components/MeetingModal.vue';
+import router from '@/router';
 import { useAuthStore } from '@/stores/auth';
 import { Calendar, Clock, Code2, Users } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
@@ -114,6 +115,7 @@ const handleAction = (actionTitle) => {
             showModal.value = true;
             break;
         default:
+            router.push(actionTitle.toLowerCase());
             break;
     }
 };

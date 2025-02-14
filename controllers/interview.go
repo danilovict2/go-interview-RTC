@@ -40,6 +40,13 @@ func (cfg *APIConfig) InterviewStore(c echo.Context) error {
 	callRequest := getstream.GetOrCreateCallRequest{
 		Data: &getstream.CallRequest{
 			CreatedByID: getstream.PtrTo(user.UUID.String()),
+			StartsAt:    &getstream.Timestamp{Time: &startTime},
+			SettingsOverride: &getstream.CallSettingsRequest{
+				Recording: &getstream.RecordSettingsRequest{
+					Mode:    "auto-on",
+					Quality: getstream.PtrTo("720p"),
+				},
+			},
 		},
 	}
 
