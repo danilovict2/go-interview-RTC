@@ -36,8 +36,8 @@ const router = createRouter({
             component: () => import('../views/RecordingsView.vue'),
             meta: {
                 requiresAuth: true,
-            }
-        }
+            },
+        },
     ],
 });
 

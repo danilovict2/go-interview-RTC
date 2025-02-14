@@ -16,11 +16,16 @@
         </CardHeader>
 
         <CardContent>
-            <div class="w-full aspect-video bg-muted/50 rounded-lg flex items-center justify-center cursor-pointer group"
-                @click="playRecording">
+            <div
+                class="w-full aspect-video bg-muted/50 rounded-lg flex items-center justify-center cursor-pointer group"
+                @click="playRecording"
+            >
                 <div
-                    class="size-12 rounded-full bg-background/90 flex items-center justify-center group-hover:bg-primary transition-colors">
-                    <Play class="size-6 text-muted-foreground group-hover:text-primary-foreground transition-colors" />
+                    class="size-12 rounded-full bg-background/90 flex items-center justify-center group-hover:bg-primary transition-colors"
+                >
+                    <Play
+                        class="size-6 text-muted-foreground group-hover:text-primary-foreground transition-colors"
+                    />
                 </div>
             </div>
         </CardContent>
@@ -45,7 +50,6 @@ import { Calendar, Clock, Play } from 'lucide-vue-next';
 import CardFooter from './ui/card/CardFooter.vue';
 import { toast } from 'vue3-toastify';
 
-
 const { recording } = defineProps({
     recording: Object,
 });
@@ -57,13 +61,13 @@ const calculateRecordingDuration = (startTime, endTime) => {
     const duration = intervalToDuration({ start, end });
 
     if (duration.hours && duration.hours > 0) {
-        return `${duration.hours}:${String(duration.minutes).padStart(2, "0")}:${String(
-            duration.seconds
-        ).padStart(2, "0")}`;
+        return `${duration.hours}:${String(duration.minutes).padStart(2, '0')}:${String(
+            duration.seconds,
+        ).padStart(2, '0')}`;
     }
 
     if (duration.minutes && duration.minutes > 0) {
-        return `${duration.minutes}:${String(duration.seconds).padStart(2, "0")}`;
+        return `${duration.minutes}:${String(duration.seconds).padStart(2, '0')}`;
     }
 
     return `${duration.seconds} seconds`;
@@ -72,21 +76,23 @@ const calculateRecordingDuration = (startTime, endTime) => {
 const duration =
     recording.start_time && recording.end_time
         ? calculateRecordingDuration(recording.start_time, recording.end_time)
-        : "Unknown duration";
+        : 'Unknown duration';
 
-const formattedStartTime = recording.start_time ? format(new Date(recording.start_time), "MMM d, yyyy, hh:mm a") : "Unknown"
+const formattedStartTime = recording.start_time
+    ? format(new Date(recording.start_time), 'MMM d, yyyy, hh:mm a')
+    : 'Unknown';
 
 const copyLink = async () => {
     try {
         await navigator.clipboard.writeText(recording.url);
-        toast.success("Recording link copied to clipboard");
+        toast.success('Recording link copied to clipboard');
     } catch (error) {
         console.log(error);
-        toast.error("Failed to copy link to clipboard");
+        toast.error('Failed to copy link to clipboard');
     }
-}
+};
 
 const playRecording = () => {
-    window.open(recording.url, '_blank')
-}
+    window.open(recording.url, '_blank');
+};
 </script>
