@@ -30,6 +30,14 @@ const router = createRouter({
                 requiresAuth: true,
             },
         },
+        {
+            path: '/recordings',
+            name: 'recordings',
+            component: () => import('../views/RecordingsView.vue'),
+            meta: {
+                requiresAuth: true,
+            },
+        },
     ],
 });
 
