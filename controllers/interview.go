@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -13,15 +14,9 @@ import (
 )
 
 func (cfg *APIConfig) InterviewStore(c echo.Context) error {
-	uuid := uuidFromJWT(c)
-	user := models.User{}
-	err := cfg.DB.First(&user, "uuid = ?", uuid).Error
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return c.JSON(http.StatusNotFound, echo.Map{
-			"error": "User not found",
-		})
-	} else if err != nil {
-		return HandleGracefully(err, c)
+	user, ok := c.Get("authUser").(models.User)
+	if !ok {
+		return HandleGracefully(fmt.Errorf("failed to retrieve authenticated user from context"), c)
 	}
 
 	if user.Role != models.ROLE_INTERVIEWER {
@@ -81,15 +76,9 @@ func (cfg *APIConfig) InterviewEnd(c echo.Context) error {
 		return HandleGracefully(err, c)
 	}
 
-	uuid := uuidFromJWT(c)
-	user := models.User{}
-	err = cfg.DB.First(&user, "uuid = ?", uuid).Error
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return c.JSON(http.StatusNotFound, echo.Map{
-			"error": "User not found",
-		})
-	} else if err != nil {
-		return HandleGracefully(err, c)
+	user, ok := c.Get("authUser").(models.User)
+	if !ok {
+		return HandleGracefully(fmt.Errorf("failed to retrieve authenticated user from context"), c)
 	}
 
 	attendees := make([]models.User, 0)
