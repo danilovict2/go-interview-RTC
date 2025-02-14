@@ -29,7 +29,6 @@ const endCall = async () => {
         );
         await call.endCall();
 
-
         router.push({ name: 'home' });
         toast.success('The meeting ended for everyone');
     } catch (error) {

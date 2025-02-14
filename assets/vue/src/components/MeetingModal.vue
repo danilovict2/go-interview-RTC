@@ -6,7 +6,11 @@
             </DialogHeader>
 
             <div class="space-y-4 pt-4">
-                <Input v-if="isJoinMeeting" placeholder="Paste meeting link here..." v-model="meetingURL" />
+                <Input
+                    v-if="isJoinMeeting"
+                    placeholder="Paste meeting link here..."
+                    v-model="meetingURL"
+                />
 
                 <div class="flex justify-end gap-3">
                     <Button variant="outline" @click="$emit('close')"> Cancel </Button>
@@ -57,7 +61,7 @@ const startMeeting = () => {
                 {
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
-                        'Authorization': `Bearer ${Cookies.get('jwt')}`,
+                        Authorization: `Bearer ${Cookies.get('jwt')}`,
                     },
                 },
             )
