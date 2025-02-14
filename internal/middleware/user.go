@@ -16,7 +16,7 @@ func (mw *Middleware) UserFromJWT(next echo.HandlerFunc) echo.HandlerFunc {
 		uuid := uuidFromJWT(c)
 		r := repository.NewUserRepository(mw.DB)
 		user, err := r.FindByUUID(uuid)
-		
+
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return c.JSON(http.StatusNotFound, echo.Map{
 				"error": "User not found",

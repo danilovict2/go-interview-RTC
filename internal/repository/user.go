@@ -11,15 +11,15 @@ type UserRepository struct {
 
 func NewUserRepository(DB *gorm.DB) *UserRepository {
 	return &UserRepository{
-        DB: DB,
-    }
+		DB: DB,
+	}
 }
 
 func (r *UserRepository) FindByUUID(uuid string) (models.User, error) {
-    user := models.User{}
+	user := models.User{}
 	if err := r.DB.First(&user, "uuid = ?", uuid).Error; err != nil {
-        return models.User{}, err
-    }
+		return models.User{}, err
+	}
 
-    return user, nil
+	return user, nil
 }
