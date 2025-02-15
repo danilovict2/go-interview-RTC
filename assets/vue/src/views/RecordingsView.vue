@@ -20,6 +20,7 @@
 <script setup>
 import RecordingCard from '@/components/RecordingCard.vue';
 import ScrollArea from '@/components/ui/scroll-area/ScrollArea.vue';
+import router from '@/router';
 import { useAuthStore } from '@/stores/auth';
 import { useStreamStore } from '@/stores/stream';
 import { ref } from 'vue';
