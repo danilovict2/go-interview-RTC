@@ -7,15 +7,8 @@
         </p>
 
         <ScrollArea class="h-[calc(100vh-12rem)] mt-3">
-            <div
-                class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 pb-6"
-                v-if="recordings.length"
-            >
-                <RecordingCard
-                    v-for="(recording, index) in recordings"
-                    :key="index"
-                    :recording="recording"
-                />
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 pb-6" v-if="recordings.length">
+                <RecordingCard v-for="(recording, index) in recordings" :key="index" :recording="recording" />
             </div>
             <div class="flex flex-col items-center justify-center h-[400px] gap-4" v-else>
                 <p class="text-xl font-medium text-muted-foreground">No recordings available</p>
@@ -32,6 +25,11 @@ import { useStreamStore } from '@/stores/stream';
 import { ref } from 'vue';
 
 const recordings = ref([]);
+
+const authUser = useAuthStore().authUser;
+if (authUser.role !== 'interviewer') {
+    router.push({ name: 'home' });
+}
 
 const getRecordings = async () => {
     const client = useStreamStore().client;
