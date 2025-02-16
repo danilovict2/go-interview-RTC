@@ -34,11 +34,22 @@
         </CardHeader>
 
         <CardContent>
-            <Button v-if="interview.status === 'live'" class="w-full" @click="console.log('join meeting')">
+            <Button
+                v-if="interview.status === 'live'"
+                class="w-full"
+                @click="console.log('join meeting')"
+            >
                 Join Meeting
             </Button>
 
-            <Button v-else-if="interview.status === 'upcoming'" variant="outline" class="w-full" disabled> Waiting to Start </Button>
+            <Button
+                v-else-if="interview.status === 'upcoming'"
+                variant="outline"
+                class="w-full"
+                disabled
+            >
+                Waiting to Start
+            </Button>
         </CardContent>
     </Card>
 </template>
@@ -53,7 +64,6 @@ import CardDescription from './ui/card/CardDescription.vue';
 import CardContent from './ui/card/CardContent.vue';
 import Button from './ui/button/Button.vue';
 import { format } from 'date-fns';
-
 
 const { interview } = defineProps({
     interview: Object,

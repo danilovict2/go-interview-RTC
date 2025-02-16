@@ -23,7 +23,11 @@
 
                         <div class="space-y-2">
                             <label class="text-sm font-medium">Description</label>
-                            <Textarea placeholder="Interview description" v-model="formData.desription" :rows="3" />
+                            <Textarea
+                                placeholder="Interview description"
+                                v-model="formData.desription"
+                                :rows="3"
+                            />
                         </div>
 
                         <div class="space-y-2">
@@ -33,8 +37,11 @@
                                     <SelectValue placeholder="Select candidate" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem v-for="candidate in candidates" :key="candidate.uuid"
-                                        :value="candidate.uuid">
+                                    <SelectItem
+                                        v-for="candidate in candidates"
+                                        :key="candidate.uuid"
+                                        :value="candidate.uuid"
+                                    >
                                         <UserInfo :user="candidate" />
                                     </SelectItem>
                                 </SelectContent>
@@ -44,25 +51,35 @@
                         <div class="space-y-2">
                             <label class="text-sm font-medium">Interviewers</label>
                             <div class="flex flex-wrap gap-2 mb-2">
-                                <div v-for="interviewer in selectedInterviewers" :key="interviewer.uuid"
-                                    class="inline-flex items-center gap-2 bg-secondary px-2 py-1 rounded-md text-sm">
+                                <div
+                                    v-for="interviewer in selectedInterviewers"
+                                    :key="interviewer.uuid"
+                                    class="inline-flex items-center gap-2 bg-secondary px-2 py-1 rounded-md text-sm"
+                                >
                                     <UserInfo :user="interviewer" />
-                                    <button @click="removeInterviewer(interviewer.uuid)"
+                                    <button
+                                        @click="removeInterviewer(interviewer.uuid)"
                                         class="hover:text-destructive transition-colors"
-                                        v-show="interviewer.uuid !== authUser.uuid">
+                                        v-show="interviewer.uuid !== authUser.uuid"
+                                    >
                                         <X class="h-4 w-4" />
                                     </button>
                                 </div>
                             </div>
 
-                            <Select @update:modelValue="$event => addInterviewer($event)"
-                                v-show="availableInterviewers.length > 0">
+                            <Select
+                                @update:modelValue="($event) => addInterviewer($event)"
+                                v-show="availableInterviewers.length > 0"
+                            >
                                 <SelectTrigger>
                                     <SelectValue placeholder="Add interviewer" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem v-for="interviewer in availableInterviewers" :key="interviewer.uuid"
-                                        :value="interviewer.uuid">
+                                    <SelectItem
+                                        v-for="interviewer in availableInterviewers"
+                                        :key="interviewer.uuid"
+                                        :value="interviewer.uuid"
+                                    >
                                         <UserInfo :user="interviewer" />
                                     </SelectItem>
                                 </SelectContent>
@@ -72,8 +89,12 @@
                         <div class="flex gap-4">
                             <div class="space-y-2">
                                 <label class="text-sm font-medium">Date</label>
-                                <Calendar :multiple="false" v-model="formData.date"
-                                    :disabled="formData.date < new Date()" class="rounded-md border" />
+                                <Calendar
+                                    :multiple="false"
+                                    v-model="formData.date"
+                                    :disabled="formData.date < new Date()"
+                                    class="rounded-md border"
+                                />
                             </div>
 
                             <div class="space-y-2">
@@ -83,7 +104,11 @@
                                         <SelectValue placeholder="Select time" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem v-for="time in TIME_SLOTS" :key="time" :value="time">
+                                        <SelectItem
+                                            v-for="time in TIME_SLOTS"
+                                            :key="time"
+                                            :value="time"
+                                        >
                                             {{ time }}
                                         </SelectItem>
                                     </SelectContent>
@@ -92,12 +117,8 @@
                         </div>
 
                         <div class="flex justify-end gap-3 pt-4">
-                            <Button variant="outline" @click="open = false">
-                                Cancel
-                            </Button>
-                            <Button @click="schedule">
-                                Schedule
-                            </Button>
+                            <Button variant="outline" @click="open = false"> Cancel </Button>
+                            <Button @click="schedule"> Schedule </Button>
                         </div>
                     </div>
                 </DialogContent>
@@ -106,7 +127,11 @@
 
         <div class="spacey-4" v-if="interviews.length > 0">
             <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                <MeetingCard v-for="interview in interviews" :key="interview.id" :interview="interview" />
+                <MeetingCard
+                    v-for="interview in interviews"
+                    :key="interview.id"
+                    :interview="interview"
+                />
             </div>
         </div>
         <div class="text-center py-12 text-muted-foreground" v-else>No interviews scheduled</div>
@@ -136,7 +161,7 @@ import { getLocalTimeZone, today } from '@internationalized/date';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { X } from 'lucide-vue-next';
-import { computed, reactive, ref, watch } from 'vue';
+import { computed, reactive, ref } from 'vue';
 import { toast } from 'vue3-toastify';
 
 const authUser = useAuthStore().authUser;
@@ -145,23 +170,23 @@ if (authUser.role !== 'interviewer') {
 }
 
 const TIME_SLOTS = [
-    "09:00",
-    "09:30",
-    "10:00",
-    "10:30",
-    "11:00",
-    "11:30",
-    "12:00",
-    "12:30",
-    "13:00",
-    "13:30",
-    "14:00",
-    "14:30",
-    "15:00",
-    "15:30",
-    "16:00",
-    "16:30",
-    "17:00",
+    '09:00',
+    '09:30',
+    '10:00',
+    '10:30',
+    '11:00',
+    '11:30',
+    '12:00',
+    '12:30',
+    '13:00',
+    '13:30',
+    '14:00',
+    '14:30',
+    '15:00',
+    '15:30',
+    '16:00',
+    '16:30',
+    '17:00',
 ];
 
 const open = ref(false);
@@ -170,50 +195,56 @@ const interviewers = ref([]);
 const interviews = ref([]);
 
 const getInterviews = () => {
-    axios.get('/interviews', {
-        headers: {
-            'Authorization': `Bearer ${Cookies.get('jwt')}`,
-        }
-    }).then(resp => {
-        interviews.value = resp.data.interviews;
-    }).catch(err => toast.error(err));
+    axios
+        .get('/interviews', {
+            headers: {
+                Authorization: `Bearer ${Cookies.get('jwt')}`,
+            },
+        })
+        .then((resp) => {
+            interviews.value = resp.data.interviews;
+        })
+        .catch((err) => toast.error(err));
 };
 
 const getUsers = () => {
-    axios.get('/users', {
-        headers: {
-            'Authorization': `Bearer ${Cookies.get('jwt')}`,
-        }
-    }).then(resp => {
-        const users = resp.data.users;
-        candidates.value = users.filter(u => u.role === 'candidate');
-        interviewers.value = users.filter(u => u.role === 'interviewer');
-    }).catch(err => toast.error(err));
-}
+    axios
+        .get('/users', {
+            headers: {
+                Authorization: `Bearer ${Cookies.get('jwt')}`,
+            },
+        })
+        .then((resp) => {
+            const users = resp.data.users;
+            candidates.value = users.filter((u) => u.role === 'candidate');
+            interviewers.value = users.filter((u) => u.role === 'interviewer');
+        })
+        .catch((err) => toast.error(err));
+};
 
 getInterviews();
 getUsers();
 
 const selectedInterviewers = computed(() => {
-    return interviewers.value.filter(i => formData.interviewerUUIDs.includes(i.uuid));
+    return interviewers.value.filter((i) => formData.interviewerUUIDs.includes(i.uuid));
 });
 
 const availableInterviewers = computed(() => {
-    return interviewers.value.filter(i => !formData.interviewerUUIDs.includes(i.uuid));
+    return interviewers.value.filter((i) => !formData.interviewerUUIDs.includes(i.uuid));
 });
 
 const formData = reactive({
-    title: "",
-    desription: "",
+    title: '',
+    desription: '',
     date: today(getLocalTimeZone()),
-    time: "12:00",
-    candidateUUID: "",
+    time: '12:00',
+    candidateUUID: '',
     interviewerUUIDs: [authUser.uuid],
 });
 
 const addInterviewer = (interviewerUUID) => {
     formData.interviewerUUIDs.push(interviewerUUID);
-}
+};
 
 const removeInterviewer = (interviewerUUID) => {
     if (interviewerUUID === authUser.uuid) {
@@ -221,26 +252,30 @@ const removeInterviewer = (interviewerUUID) => {
         return;
     }
 
-    formData.interviewerUUIDs = formData.interviewerUUIDs.filter(uuid => uuid !== interviewerUUID);
+    formData.interviewerUUIDs = formData.interviewerUUIDs.filter(
+        (uuid) => uuid !== interviewerUUID,
+    );
 };
 
 const schedule = () => {
     if (!formData.candidateUUID || formData.interviewerUUIDs.length === 0) {
-        toast.error("Please select both candidate and at least one interviewer");
+        toast.error('Please select both candidate and at least one interviewer');
         return;
     }
 
     if (!formData.title || !formData.desription) {
-        toast.error("Please write a description and a title");
+        toast.error('Please write a description and a title');
         return;
     }
 
-    const [hours, minutes] = formData.time.split(":");
+    const [hours, minutes] = formData.time.split(':');
     const startTime = new Date(formData.date.toDate());
     startTime.setHours(parseInt(hours), parseInt(minutes), 0);
 
     if (startTime < new Date()) {
-        toast.error("The interview cannot be scheduled in the past. Please select a future date and time.");
+        toast.error(
+            'The interview cannot be scheduled in the past. Please select a future date and time.',
+        );
         return;
     }
 
@@ -249,25 +284,28 @@ const schedule = () => {
         description: formData.desription,
         attendeeUUIDs: JSON.stringify([formData.candidateUUID, ...formData.interviewerUUIDs]),
         startTime: startTime.toUTCString(),
-    }
+    };
 
-    axios.post('/interviews/store', data, {
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': `Bearer ${Cookies.get('jwt')}`,
-        },
-    }).then(() => {
-        open.value = false;
-        Object.assign(formData, {
-            title: "",
-            desription: "",
-            date: today(getLocalTimeZone()),
-            time: "12:00",
-            candidateUUID: "",
-            interviewerUUIDs: [authUser.uuid],
-        });
-        getInterviews();
-        toast.success("Meeting scheduled successfully!");
-    }).catch(err => console.log(err));
-}
+    axios
+        .post('/interviews/store', data, {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                Authorization: `Bearer ${Cookies.get('jwt')}`,
+            },
+        })
+        .then(() => {
+            open.value = false;
+            Object.assign(formData, {
+                title: '',
+                desription: '',
+                date: today(getLocalTimeZone()),
+                time: '12:00',
+                candidateUUID: '',
+                interviewerUUIDs: [authUser.uuid],
+            });
+            getInterviews();
+            toast.success('Meeting scheduled successfully!');
+        })
+        .catch((err) => console.log(err));
+};
 </script>
