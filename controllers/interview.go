@@ -1,22 +1,24 @@
 package controllers
 
 import (
+	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 	"time"
 
-	"github.com/GetStream/getstream-go"
+	"github.com/danilovict2/go-interview-RTC/internal/repository"
+	"github.com/danilovict2/go-interview-RTC/internal/services"
 	"github.com/danilovict2/go-interview-RTC/models"
-	uuidUtils "github.com/google/uuid"
+	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 )
 
 func (cfg *APIConfig) InterviewStore(c echo.Context) error {
-	user, ok := c.Get("authUser").(models.User)
-	if !ok {
-		return HandleGracefully(fmt.Errorf("failed to retrieve authenticated user from context"), c)
+	r := repository.NewUserRepository(cfg.DB)
+	user, err := r.FindOneByUUID(c.Get("uuid").(string))
+	if err != nil {
+		return HandleGracefully(err, c)
 	}
 
 	if user.Role != models.ROLE_INTERVIEWER {
@@ -25,32 +27,34 @@ func (cfg *APIConfig) InterviewStore(c echo.Context) error {
 		})
 	}
 
-	startTime, err := time.Parse(http.TimeFormat, c.FormValue("startTime"))
+	var attendeeUUIDs []string
+	if err := json.Unmarshal([]byte(c.FormValue("attendeeUUIDs")), &attendeeUUIDs); err != nil {
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"error": err.Error(),
+		})
+	}
+
+	attendees, err := r.FindByUUID(attendeeUUIDs)
 	if err != nil {
 		return HandleGracefully(err, c)
 	}
 
+	startTime, err := time.Parse(http.TimeFormat, c.FormValue("startTime"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"error": "Invalid Start Time",
+		})
+	}
+
 	status := models.STATUS_LIVE
-	if startTime.After(time.Now()) {
+	switch {
+	case startTime.After(time.Now()):
 		status = models.STATUS_UPCOMING
+	case startTime.Before(time.Now()):
+		status = models.STATUS_COMPLETED
 	}
 
-	callID := uuidUtils.NewString()
-	call := cfg.StreamClient.Video().Call("default", callID)
-	callRequest := getstream.GetOrCreateCallRequest{
-		Data: &getstream.CallRequest{
-			CreatedByID: getstream.PtrTo(user.UUID.String()),
-			StartsAt:    &getstream.Timestamp{Time: &startTime},
-			SettingsOverride: &getstream.CallSettingsRequest{
-				Recording: &getstream.RecordSettingsRequest{
-					Mode:    "auto-on",
-					Quality: getstream.PtrTo("720p"),
-				},
-			},
-		},
-	}
-
-	resp, err := call.GetOrCreate(c.Request().Context(), &callRequest)
+	streamCallID, err := services.CreateNewVideoCall(cfg.StreamClient, user, startTime)
 	if err != nil {
 		return HandleGracefully(err, c)
 	}
@@ -60,8 +64,13 @@ func (cfg *APIConfig) InterviewStore(c echo.Context) error {
 		Description:  c.FormValue("description"),
 		StartTime:    startTime,
 		Status:       status,
-		StreamCallID: resp.Data.Call.ID,
-		Attendees:    []models.User{user},
+		StreamCallID: streamCallID,
+		Attendees:    attendees,
+	}
+
+	validate := validator.New(validator.WithRequiredStructEnabled())
+	if err := validate.Struct(interview); err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
 	}
 
 	if err := cfg.DB.Create(&interview).Error; err != nil {
@@ -72,9 +81,14 @@ func (cfg *APIConfig) InterviewStore(c echo.Context) error {
 }
 
 func (cfg *APIConfig) InterviewEnd(c echo.Context) error {
-	streamCallID := c.Param("stream-call-id")
-	interview := models.Interview{}
-	err := cfg.DB.First(&interview, "stream_call_id = ?", streamCallID).Error
+	ur := repository.NewUserRepository(cfg.DB)
+	user, err := ur.FindOneByUUID(c.Get("uuid").(string))
+	if err != nil {
+		return HandleGracefully(err, c)
+	}
+
+	ir := repository.NewInterviewRepository(cfg.DB)
+	interview, err := ir.FindOneByStreamCallID(c.Param("stream-call-id"))
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return c.JSON(http.StatusNotFound, echo.Map{
 			"error": "Interview not found",
@@ -83,22 +97,9 @@ func (cfg *APIConfig) InterviewEnd(c echo.Context) error {
 		return HandleGracefully(err, c)
 	}
 
-	user, ok := c.Get("authUser").(models.User)
-	if !ok {
-		return HandleGracefully(fmt.Errorf("failed to retrieve authenticated user from context"), c)
-	}
-
-	attendees := make([]models.User, 0)
-	if err := cfg.DB.Model(&interview).Association("Attendees").Find(&attendees); err != nil {
+	isAttendee, err := ir.IsAttendee(interview, user)
+	if err != nil {
 		return HandleGracefully(err, c)
-	}
-
-	isAttendee := false
-	for _, attendee := range attendees {
-		if attendee.UUID == user.UUID {
-			isAttendee = true
-			break
-		}
 	}
 
 	if user.Role != models.ROLE_INTERVIEWER || !isAttendee {
@@ -115,9 +116,26 @@ func (cfg *APIConfig) InterviewEnd(c echo.Context) error {
 	interview.Status = models.STATUS_COMPLETED
 	interview.EndTime = &endTime
 
-	if err := cfg.DB.Save(interview).Error; err != nil {
+	if err := cfg.DB.Save(&interview).Error; err != nil {
 		return HandleGracefully(err, c)
 	}
 
 	return c.JSON(http.StatusOK, interview)
+}
+
+func (cfg *APIConfig) InterviewsGet(c echo.Context) error {
+	r := repository.NewUserRepository(cfg.DB)
+	user, err := r.FindOneByUUID(c.Get("uuid").(string))
+	if err != nil {
+		return HandleGracefully(err, c)
+	}
+
+	var interviews []models.Interview
+	if err := cfg.DB.Model(&user).Association("Interviews").Find(&interviews); err != nil {
+		return HandleGracefully(err, c)
+	}
+
+	return c.JSON(http.StatusOK, echo.Map{
+		"interviews": interviews,
+	})
 }

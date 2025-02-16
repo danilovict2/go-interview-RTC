@@ -4,22 +4,22 @@
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2 text-sm text-muted-foreground">
                     <CalendarIcon class="h-4 w-4" />
-                    {{ interview.startDate }}
+                    {{ formattedStartTime }}
                 </div>
 
                 <Badge
                     :variant="
-                        status === 'live'
+                        interview.status === 'live'
                             ? 'default'
-                            : status === 'upcoming'
+                            : interview.status === 'upcoming'
                               ? 'secondary'
                               : 'outline'
                     "
                 >
                     {{
-                        status === 'live'
+                        interview.status === 'live'
                             ? 'Live Now'
-                            : status === 'upcoming'
+                            : interview.status === 'upcoming'
                               ? 'Upcoming'
                               : 'Completed'
                     }}
@@ -34,11 +34,22 @@
         </CardHeader>
 
         <CardContent>
-            <Button v-if="status === 'live'" class="w-full" @click="console.log('join meeting')">
+            <Button
+                v-if="interview.status === 'live'"
+                class="w-full"
+                @click="console.log('join meeting')"
+            >
                 Join Meeting
             </Button>
 
-            <Button v-else variant="outline" class="w-full" disabled> Waiting to Start </Button>
+            <Button
+                v-else-if="interview.status === 'upcoming'"
+                variant="outline"
+                class="w-full"
+                disabled
+            >
+                Waiting to Start
+            </Button>
         </CardContent>
     </Card>
 </template>
@@ -52,10 +63,11 @@ import CardTitle from './ui/card/CardTitle.vue';
 import CardDescription from './ui/card/CardDescription.vue';
 import CardContent from './ui/card/CardContent.vue';
 import Button from './ui/button/Button.vue';
+import { format } from 'date-fns';
 
-const status = 'live';
-
-defineProps({
+const { interview } = defineProps({
     interview: Object,
 });
+
+const formattedStartTime = format(new Date(interview.start_time), 'MMM d, yyyy, hh:mm a');
 </script>

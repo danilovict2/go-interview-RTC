@@ -64,12 +64,14 @@ func main() {
 	e.GET("/stream/token", api.StreamNewToken, echojwt.WithConfig(jwtConfig), mdw.UUIDFromJWT)
 
 	u := e.Group("/users")
+	u.GET("", api.UsersGet)
 	u.POST("/store", api.UserStore)
 	u.GET("/:uuid", api.UserGet, echojwt.WithConfig(jwtConfig), mdw.UUIDFromJWT)
 
-	i := e.Group("/interviews")
-	i.POST("/store", api.InterviewStore, echojwt.WithConfig(jwtConfig), mdw.UserFromJWT)
-	i.PATCH("/:stream-call-id/end", api.InterviewEnd, echojwt.WithConfig(jwtConfig), mdw.UserFromJWT)
+	i := e.Group("/interviews", echojwt.WithConfig(jwtConfig), mdw.UUIDFromJWT)
+	i.GET("", api.InterviewsGet)
+	i.POST("/store", api.InterviewStore)
+	i.PATCH("/:stream-call-id/end", api.InterviewEnd)
 
 	e.Logger.Fatal(e.Start(os.Getenv("LISTEN_ADDR")))
 }
