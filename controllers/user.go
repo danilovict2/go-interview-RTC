@@ -51,7 +51,7 @@ func (cfg *APIConfig) UserGet(c echo.Context) error {
 	}
 
 	r := repository.NewUserRepository(cfg.DB)
-	user, err := r.FindByUUID(uuid)
+	user, err := r.FindOneByUUID(uuid)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return c.JSON(http.StatusNotFound, echo.Map{
 			"error": "User not found",

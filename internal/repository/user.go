@@ -15,11 +15,25 @@ func NewUserRepository(DB *gorm.DB) *UserRepository {
 	}
 }
 
-func (r *UserRepository) FindByUUID(uuid string) (models.User, error) {
+func (r *UserRepository) FindOneByUUID(uuid string) (models.User, error) {
 	user := models.User{}
 	if err := r.DB.First(&user, "uuid = ?", uuid).Error; err != nil {
 		return models.User{}, err
 	}
 
 	return user, nil
+}
+
+func (r *UserRepository) FindByUUID(uuids []string) ([]models.User, error) {
+	users := make([]models.User, 0)
+	for _, uuid := range uuids {
+		user, err := r.FindOneByUUID(uuid)
+		if err != nil {
+			return []models.User{}, err
+		}
+
+		users = append(users, user)
+	}
+
+	return users, nil
 }

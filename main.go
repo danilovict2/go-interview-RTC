@@ -68,7 +68,7 @@ func main() {
 	u.POST("/store", api.UserStore)
 	u.GET("/:uuid", api.UserGet, echojwt.WithConfig(jwtConfig), mdw.UUIDFromJWT)
 
-	i := e.Group("/interviews", echojwt.WithConfig(jwtConfig), mdw.UserFromJWT)
+	i := e.Group("/interviews", echojwt.WithConfig(jwtConfig), mdw.UUIDFromJWT)
 	i.GET("", api.InterviewsGet)
 	i.POST("/store", api.InterviewStore)
 	i.PATCH("/:stream-call-id/end", api.InterviewEnd)

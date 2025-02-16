@@ -6,18 +6,17 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/GetStream/getstream-go"
 	"github.com/danilovict2/go-interview-RTC/internal/repository"
+	"github.com/danilovict2/go-interview-RTC/internal/services"
 	"github.com/danilovict2/go-interview-RTC/models"
 	"github.com/go-playground/validator/v10"
-	uuidUtils "github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 )
 
 func (cfg *APIConfig) InterviewStore(c echo.Context) error {
 	r := repository.NewUserRepository(cfg.DB)
-	user, err := r.FindByUUID(c.Get("uuid").(string))
+	user, err := r.FindOneByUUID(c.Get("uuid").(string))
 	if err != nil {
 		return HandleGracefully(err, c)
 	}
@@ -35,14 +34,9 @@ func (cfg *APIConfig) InterviewStore(c echo.Context) error {
 		})
 	}
 
-	attendees := make([]models.User, 0)
-	for _, uuid := range attendeeUUIDs {
-		attendee, err := r.FindByUUID(uuid)
-		if err != nil {
-			return HandleGracefully(err, c)
-		}
-
-		attendees = append(attendees, attendee)
+	attendees, err := r.FindByUUID(attendeeUUIDs)
+	if err != nil {
+		return HandleGracefully(err, c)
 	}
 
 	startTime, err := time.Parse(http.TimeFormat, c.FormValue("startTime"))
@@ -60,22 +54,7 @@ func (cfg *APIConfig) InterviewStore(c echo.Context) error {
 		status = models.STATUS_COMPLETED
 	}
 
-	callID := uuidUtils.NewString()
-	call := cfg.StreamClient.Video().Call("default", callID)
-	callRequest := getstream.GetOrCreateCallRequest{
-		Data: &getstream.CallRequest{
-			CreatedByID: getstream.PtrTo(user.UUID.String()),
-			StartsAt:    &getstream.Timestamp{Time: &startTime},
-			SettingsOverride: &getstream.CallSettingsRequest{
-				Recording: &getstream.RecordSettingsRequest{
-					Mode:    "auto-on",
-					Quality: getstream.PtrTo("720p"),
-				},
-			},
-		},
-	}
-
-	resp, err := call.GetOrCreate(c.Request().Context(), &callRequest)
+	streamCallID, err := services.CreateNewVideoCall(cfg.StreamClient, user, startTime)
 	if err != nil {
 		return HandleGracefully(err, c)
 	}
@@ -85,7 +64,7 @@ func (cfg *APIConfig) InterviewStore(c echo.Context) error {
 		Description:  c.FormValue("description"),
 		StartTime:    startTime,
 		Status:       status,
-		StreamCallID: resp.Data.Call.ID,
+		StreamCallID: streamCallID,
 		Attendees:    attendees,
 	}
 
@@ -102,9 +81,14 @@ func (cfg *APIConfig) InterviewStore(c echo.Context) error {
 }
 
 func (cfg *APIConfig) InterviewEnd(c echo.Context) error {
-	streamCallID := c.Param("stream-call-id")
-	interview := models.Interview{}
-	err := cfg.DB.First(&interview, "stream_call_id = ?", streamCallID).Error
+	ur := repository.NewUserRepository(cfg.DB)
+	user, err := ur.FindOneByUUID(c.Get("uuid").(string))
+	if err != nil {
+		return HandleGracefully(err, c)
+	}
+
+	ir := repository.NewInterviewRepository(cfg.DB)
+	interview, err := ir.FindOneByStreamCallID(c.Param("stream-call-id"))
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return c.JSON(http.StatusNotFound, echo.Map{
 			"error": "Interview not found",
@@ -113,23 +97,9 @@ func (cfg *APIConfig) InterviewEnd(c echo.Context) error {
 		return HandleGracefully(err, c)
 	}
 
-	r := repository.NewUserRepository(cfg.DB)
-	user, err := r.FindByUUID(c.Get("uuid").(string))
+	isAttendee, err := ir.IsAttendee(interview, user)
 	if err != nil {
 		return HandleGracefully(err, c)
-	}
-
-	attendees := make([]models.User, 0)
-	if err := cfg.DB.Model(&interview).Association("Attendees").Find(&attendees); err != nil {
-		return HandleGracefully(err, c)
-	}
-
-	isAttendee := false
-	for _, attendee := range attendees {
-		if attendee.UUID == user.UUID {
-			isAttendee = true
-			break
-		}
 	}
 
 	if user.Role != models.ROLE_INTERVIEWER || !isAttendee {
@@ -146,7 +116,7 @@ func (cfg *APIConfig) InterviewEnd(c echo.Context) error {
 	interview.Status = models.STATUS_COMPLETED
 	interview.EndTime = &endTime
 
-	if err := cfg.DB.Save(interview).Error; err != nil {
+	if err := cfg.DB.Save(&interview).Error; err != nil {
 		return HandleGracefully(err, c)
 	}
 
@@ -155,7 +125,7 @@ func (cfg *APIConfig) InterviewEnd(c echo.Context) error {
 
 func (cfg *APIConfig) InterviewsGet(c echo.Context) error {
 	r := repository.NewUserRepository(cfg.DB)
-	user, err := r.FindByUUID(c.Get("uuid").(string))
+	user, err := r.FindOneByUUID(c.Get("uuid").(string))
 	if err != nil {
 		return HandleGracefully(err, c)
 	}
