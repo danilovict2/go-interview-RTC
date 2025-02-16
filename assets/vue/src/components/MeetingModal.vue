@@ -34,6 +34,7 @@ import router from '@/router';
 import axios from 'axios';
 import { toast } from 'vue3-toastify';
 import Cookies from 'js-cookie';
+import { useAuthStore } from '@/stores/auth';
 
 defineEmits(['close']);
 
@@ -57,6 +58,7 @@ const startMeeting = () => {
                     title: 'Instant Meeting',
                     description: 'Instant Meeting',
                     startTime: new Date().toUTCString(),
+                    attendeeUUIDs: JSON.stringify([useAuthStore().authUser.uuid]),
                 },
                 {
                     headers: {

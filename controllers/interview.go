@@ -1,13 +1,16 @@
 package controllers
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/GetStream/getstream-go"
+	"github.com/danilovict2/go-interview-RTC/internal/repository"
 	"github.com/danilovict2/go-interview-RTC/models"
+	"github.com/go-playground/validator/v10"
 	uuidUtils "github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
@@ -25,14 +28,37 @@ func (cfg *APIConfig) InterviewStore(c echo.Context) error {
 		})
 	}
 
+	var attendeeUUIDs []string
+	if err := json.Unmarshal([]byte(c.FormValue("attendeeUUIDs")), &attendeeUUIDs); err != nil {
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"error": err.Error(),
+		})
+	}
+
+	r := repository.NewUserRepository(cfg.DB)
+	attendees := make([]models.User, 0)
+	for _, uuid := range attendeeUUIDs {
+		attendee, err := r.FindByUUID(uuid)
+		if err != nil {
+			return HandleGracefully(err, c)
+		}
+
+		attendees = append(attendees, attendee)
+	}
+
 	startTime, err := time.Parse(http.TimeFormat, c.FormValue("startTime"))
 	if err != nil {
-		return HandleGracefully(err, c)
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"error": "Invalid Start Time",
+		})
 	}
 
 	status := models.STATUS_LIVE
-	if startTime.After(time.Now()) {
+	switch {
+	case startTime.After(time.Now()):
 		status = models.STATUS_UPCOMING
+	case startTime.Before(time.Now()):
+		status = models.STATUS_COMPLETED
 	}
 
 	callID := uuidUtils.NewString()
@@ -61,7 +87,12 @@ func (cfg *APIConfig) InterviewStore(c echo.Context) error {
 		StartTime:    startTime,
 		Status:       status,
 		StreamCallID: resp.Data.Call.ID,
-		Attendees:    []models.User{user},
+		Attendees:    attendees,
+	}
+
+	validate := validator.New(validator.WithRequiredStructEnabled())
+	if err := validate.Struct(interview); err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
 	}
 
 	if err := cfg.DB.Create(&interview).Error; err != nil {
@@ -120,4 +151,20 @@ func (cfg *APIConfig) InterviewEnd(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, interview)
+}
+
+func (cfg *APIConfig) InterviewsGet(c echo.Context) error {
+	user, ok := c.Get("authUser").(models.User)
+	if !ok {
+		return HandleGracefully(fmt.Errorf("failed to retrieve authenticated user from context"), c)
+	}
+
+	var interviews []models.Interview
+	if err := cfg.DB.Model(&user).Association("Interviews").Find(&interviews); err != nil {
+		return HandleGracefully(err, c)
+	}
+
+	return c.JSON(http.StatusOK, echo.Map{
+		"interviews": interviews,
+	})
 }

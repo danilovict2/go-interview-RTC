@@ -62,3 +62,14 @@ func (cfg *APIConfig) UserGet(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, user)
 }
+
+func (cfg *APIConfig) UsersGet(c echo.Context) error {
+	var users []models.User
+	if err := cfg.DB.Find(&users).Error; err != nil {
+		return HandleGracefully(err, c)
+	}
+
+	return c.JSON(http.StatusOK, echo.Map{
+		"users": users,
+	})
+}
