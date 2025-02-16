@@ -3,7 +3,6 @@ package controllers
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -17,9 +16,10 @@ import (
 )
 
 func (cfg *APIConfig) InterviewStore(c echo.Context) error {
-	user, ok := c.Get("authUser").(models.User)
-	if !ok {
-		return HandleGracefully(fmt.Errorf("failed to retrieve authenticated user from context"), c)
+	r := repository.NewUserRepository(cfg.DB)
+	user, err := r.FindByUUID(c.Get("uuid").(string))
+	if err != nil {
+		return HandleGracefully(err, c)
 	}
 
 	if user.Role != models.ROLE_INTERVIEWER {
@@ -35,7 +35,6 @@ func (cfg *APIConfig) InterviewStore(c echo.Context) error {
 		})
 	}
 
-	r := repository.NewUserRepository(cfg.DB)
 	attendees := make([]models.User, 0)
 	for _, uuid := range attendeeUUIDs {
 		attendee, err := r.FindByUUID(uuid)
@@ -114,9 +113,10 @@ func (cfg *APIConfig) InterviewEnd(c echo.Context) error {
 		return HandleGracefully(err, c)
 	}
 
-	user, ok := c.Get("authUser").(models.User)
-	if !ok {
-		return HandleGracefully(fmt.Errorf("failed to retrieve authenticated user from context"), c)
+	r := repository.NewUserRepository(cfg.DB)
+	user, err := r.FindByUUID(c.Get("uuid").(string))
+	if err != nil {
+		return HandleGracefully(err, c)
 	}
 
 	attendees := make([]models.User, 0)
@@ -154,9 +154,10 @@ func (cfg *APIConfig) InterviewEnd(c echo.Context) error {
 }
 
 func (cfg *APIConfig) InterviewsGet(c echo.Context) error {
-	user, ok := c.Get("authUser").(models.User)
-	if !ok {
-		return HandleGracefully(fmt.Errorf("failed to retrieve authenticated user from context"), c)
+	r := repository.NewUserRepository(cfg.DB)
+	user, err := r.FindByUUID(c.Get("uuid").(string))
+	if err != nil {
+		return HandleGracefully(err, c)
 	}
 
 	var interviews []models.Interview
