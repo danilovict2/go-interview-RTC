@@ -1,5 +1,6 @@
 <template>
-    <div class="container max-w-7xl mx-auto p-6 space-y-8">
+    <AppLoading v-if="isLoading"></AppLoading>
+    <div class="container max-w-7xl mx-auto p-6 space-y-8" v-else>
         <div class="flex items-center justify-between">
             <div>
                 <h1 class="text-3xl font-bold">Interviews</h1>
@@ -139,6 +140,7 @@
 </template>
 
 <script setup>
+import AppLoading from '@/components/AppLoading.vue';
 import MeetingCard from '@/components/MeetingCard.vue';
 import Button from '@/components/ui/button/Button.vue';
 import Calendar from '@/components/ui/calendar/Calendar.vue';
@@ -194,6 +196,7 @@ const open = ref(false);
 const candidates = ref([]);
 const interviewers = ref([]);
 const interviews = ref([]);
+const isLoading = ref(false);
 
 const getUsers = () => {
     axios
@@ -210,7 +213,7 @@ const getUsers = () => {
         .catch((err) => toast.error(err));
 };
 
-useInterview().getInterviews(interviews);
+useInterview().getInterviews(interviews, isLoading);
 getUsers();
 
 const selectedInterviewers = computed(() => {
@@ -291,7 +294,7 @@ const schedule = () => {
                 candidateUUID: '',
                 interviewerUUIDs: [authUser.uuid],
             });
-            useInterview().getInterviews(interviews);
+            useInterview().getInterviews(interviews, isLoading);
             toast.success('Meeting scheduled successfully!');
         })
         .catch((err) => console.log(err));

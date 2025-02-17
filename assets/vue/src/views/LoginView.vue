@@ -1,5 +1,6 @@
 <template>
-    <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+    <AppLoading v-if="isLoading"></AppLoading>
+    <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8" v-else>
         <div class="sm:mx-auto sm:w-full sm:max-w-sm">
             <h2 class="mt-10 text-center text-2xl/9 font-bold tracking-tight">
                 Sign in to your account
@@ -68,6 +69,8 @@ import { Input } from '@/components/ui/input';
 import axios from 'axios';
 import { toast } from 'vue3-toastify';
 import router from '@/router';
+import AppLoading from '@/components/AppLoading.vue';
+import { ref } from 'vue';
 
 const formSchema = toTypedSchema(
     z.object({
@@ -80,7 +83,10 @@ const { handleSubmit } = useForm({
     validationSchema: formSchema,
 });
 
+const isLoading = ref(false);
+
 const onSubmit = handleSubmit((values) => {
+    isLoading.value = true;
     axios
         .post('/login', values, {
             headers: {
@@ -89,6 +95,7 @@ const onSubmit = handleSubmit((values) => {
         })
         .then((resp) => {
             document.cookie = `jwt=${resp.data.token};expires=${resp.data.expires};path=/;secure;`;
+            isLoading.value = false;
             router.push({ name: 'Home' });
         })
         .catch((err) => toast.error(err.response.data));

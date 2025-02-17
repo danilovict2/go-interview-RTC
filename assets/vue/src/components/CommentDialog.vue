@@ -1,4 +1,5 @@
 <template>
+    <AppLoading v-if="isLoading"/>
     <Dialog :open="isOpen" @update:open="isOpen = !isOpen">
         <DialogTrigger asChild>
             <Button variant="secondary" class="w-full">
@@ -127,6 +128,7 @@ import axios from 'axios';
 import { toast } from 'vue3-toastify';
 import Cookies from 'js-cookie';
 import StarRating from './StarRating.vue';
+import AppLoading from './AppLoading.vue';
 
 const { interviewID } = defineProps({
     interviewID: String,
@@ -136,8 +138,10 @@ const isOpen = ref(false);
 const comments = ref([]);
 const rating = ref(1);
 const comment = ref('');
+const isLoading = ref(false);
 
 const handleSubmit = () => {
+    isLoading.value = true;
     axios
         .post(
             '/comments/store',
@@ -157,11 +161,13 @@ const handleSubmit = () => {
             rating.value = 1;
             comment.value = '';
             comments.value.push(resp.data.comment);
+            isLoading.value = false;
         })
         .catch((err) => toast.error(err));
 };
 
 const getComments = (interviewID) => {
+    isLoading.value = true;
     axios
         .get(`/interviews/${interviewID}/comments`, {
             headers: {
@@ -170,6 +176,7 @@ const getComments = (interviewID) => {
         })
         .then((resp) => {
             comments.value = resp.data.comments;
+            isLoading.value = false;
         })
         .catch((err) => toast.error(err.response.data.message));
 };

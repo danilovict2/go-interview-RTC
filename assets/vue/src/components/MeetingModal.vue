@@ -1,5 +1,6 @@
 <template>
-    <Dialog :open="isOpen" @update:open="$emit('close')">
+    <AppLoading v-if="isLoading"></AppLoading>
+    <Dialog :open="isOpen" @update:open="$emit('close')" v-else>
         <DialogContent class="sm:max-w-[425px]">
             <DialogHeader>
                 <DialogTitle>{{ title }}</DialogTitle>
@@ -35,6 +36,7 @@ import axios from 'axios';
 import { toast } from 'vue3-toastify';
 import Cookies from 'js-cookie';
 import { useAuthStore } from '@/stores/auth';
+import AppLoading from './AppLoading.vue';
 
 defineEmits(['close']);
 
@@ -45,12 +47,14 @@ const { isJoinMeeting } = defineProps({
 });
 
 const meetingURL = ref('');
+const isLoading = ref(false);
 
 const startMeeting = () => {
     if (isJoinMeeting) {
         const meetingID = meetingURL.value.split('/').pop();
         router.push({ name: 'Meeting', params: { id: meetingID } });
     } else {
+        isLoading.value = true;
         axios
             .post(
                 '/interviews/store',
@@ -68,6 +72,7 @@ const startMeeting = () => {
                 },
             )
             .then((resp) => {
+                isLoading.value = false;
                 router.push({ name: 'Meeting', params: { id: resp.data.stream_call_id } });
             })
             .catch((err) => toast.error(err.response.data.message));

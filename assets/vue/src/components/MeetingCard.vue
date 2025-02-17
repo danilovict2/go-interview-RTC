@@ -7,16 +7,16 @@
                     {{ formattedStartTime }}
                 </div>
 
-                <Badge :variant="interview.status === 'live'
+                <Badge :variant="status === 'live'
                     ? 'default'
-                    : interview.status === 'upcoming'
+                    : status === 'upcoming'
                         ? 'secondary'
                         : 'outline'
                     ">
                     {{
-                        interview.status === 'live'
+                        status === 'live'
                             ? 'Live Now'
-                            : interview.status === 'upcoming'
+                            : status === 'upcoming'
                                 ? 'Upcoming'
                                 : 'Completed'
                     }}
@@ -30,12 +30,12 @@
         </CardHeader>
 
         <CardContent>
-            <Button v-if="interview.status === 'live'" class="w-full"
+            <Button v-if="status === 'live'" class="w-full"
                 @click="router.push({ name: 'Meeting', params: { id: interview.stream_call_id } });">
                 Join Meeting
             </Button>
 
-            <Button v-else-if="interview.status === 'upcoming'" variant="outline" class="w-full" disabled>
+            <Button v-else-if="status === 'upcoming'" variant="outline" class="w-full" disabled>
                 Waiting to Start
             </Button>
         </CardContent>
@@ -52,7 +52,7 @@ import CardDescription from './ui/card/CardDescription.vue';
 import CardContent from './ui/card/CardContent.vue';
 import Button from './ui/button/Button.vue';
 import { format } from 'date-fns';
-import { onBeforeMount } from 'vue';
+import { onBeforeMount, ref } from 'vue';
 import axios from 'axios';
 import { toast } from 'vue3-toastify';
 import Cookies from 'js-cookie';
@@ -63,11 +63,12 @@ const { interview } = defineProps({
 });
 
 const startTime = new Date(interview.start_time);
+const status = ref(interview.status);
 const formattedStartTime = format(startTime, 'MMM d, yyyy, hh:mm a');
 
 onBeforeMount(() => {
-    if (startTime < new Date() && interview.status !== 'completed') {
-        interview.status = 'live';
+    if (startTime < new Date() && status.value !== 'completed') {
+        status.value = 'live';
         axios.patch(
             `/interviews/${interview.stream_call_id}/mark_live`,
             null,

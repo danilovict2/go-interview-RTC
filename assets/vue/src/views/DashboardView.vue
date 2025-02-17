@@ -1,5 +1,6 @@
 <template>
-    <div class="container mx-auto py-10">
+    <AppLoading v-if="isLoading"/>
+    <div class="container mx-auto py-10" v-else>
         <div class="flex items-center mb-8">
             <RouterLink to="/schedule">
                 <Button>Schedule New Interview</Button>
@@ -89,6 +90,7 @@
 </template>
 
 <script setup>
+import AppLoading from '@/components/AppLoading.vue';
 import CommentDialog from '@/components/CommentDialog.vue';
 import Avatar from '@/components/ui/avatar/Avatar.vue';
 import AvatarFallback from '@/components/ui/avatar/AvatarFallback.vue';
@@ -116,8 +118,10 @@ if (authUser.role !== 'interviewer') {
     router.push({ name: 'Home' });
 }
 
+const isLoading = ref(false);
+
 const interviews = ref([]);
-useInterview().getInterviews(interviews);
+useInterview().getInterviews(interviews, isLoading);
 
 const categories = computed(() => {
     return [
@@ -172,7 +176,7 @@ const updateDecision = (interview, decision) => {
             },
         )
         .then(() => {
-            useInterview().getInterviews(interviews);
+            useInterview().getInterviews(interviews, isLoading);
         })
         .catch((err) => toast.error(err.response.data.message));
 };
