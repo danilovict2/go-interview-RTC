@@ -59,6 +59,7 @@
 import ActionCard from '@/components/ActionCard.vue';
 import MeetingCard from '@/components/MeetingCard.vue';
 import MeetingModal from '@/components/MeetingModal.vue';
+import { useInterview } from '@/composables/interview';
 import router from '@/router';
 import { useAuthStore } from '@/stores/auth';
 import { Calendar, Clock, Code2, Users } from 'lucide-vue-next';
@@ -66,6 +67,7 @@ import { computed, ref } from 'vue';
 
 const authStore = useAuthStore();
 const interviews = ref([]);
+useInterview().getInterviews(interviews);
 const isInterviewer = computed(() => {
     return authStore.authUser?.role === 'interviewer';
 });
