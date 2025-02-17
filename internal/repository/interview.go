@@ -17,7 +17,7 @@ func NewInterviewRepository(DB *gorm.DB) *InterviewRepository {
 
 func (r *InterviewRepository) FindOneByStreamCallID(streamCallID string) (models.Interview, error) {
 	interview := models.Interview{}
-	if err := r.DB.First(&interview, "stream_call_id = ?", streamCallID).Error; err != nil {
+	if err := r.DB.Preload("Attendees").First(&interview, "stream_call_id = ?", streamCallID).Error; err != nil {
 		return models.Interview{}, err
 	}
 

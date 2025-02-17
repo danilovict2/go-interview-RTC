@@ -49,7 +49,7 @@ const meetingURL = ref('');
 const startMeeting = () => {
     if (isJoinMeeting) {
         const meetingID = meetingURL.value.split('/').pop();
-        router.push(`/meetings/${meetingID}`);
+        router.push({ name: 'Meeting', params: { id: meetingID } });
     } else {
         axios
             .post(
@@ -68,7 +68,7 @@ const startMeeting = () => {
                 },
             )
             .then((resp) => {
-                router.push(`/meetings/${resp.data.stream_call_id}`);
+                router.push({ name: 'Meeting', params: { id: resp.data.stream_call_id } });
             })
             .catch((err) => toast.error(err.response.data.message));
     }

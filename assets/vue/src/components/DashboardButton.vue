@@ -1,5 +1,5 @@
 <template>
-    <RouterLink to="#">
+    <RouterLink to="/dashboard">
         <Button class="gap-2 font-medium" size="sm">
             <SparkleIcon class="size-4" />
             Dashboard

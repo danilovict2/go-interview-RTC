@@ -89,7 +89,7 @@ const onSubmit = handleSubmit((values) => {
         })
         .then((resp) => {
             document.cookie = `jwt=${resp.data.token};expires=${resp.data.expires};path=/;secure;`;
-            router.push({ name: 'home' });
+            router.push({ name: 'Home' });
         })
         .catch((err) => toast.error(err.response.data));
 });

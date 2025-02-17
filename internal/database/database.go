@@ -25,4 +25,8 @@ func migrate(db *gorm.DB) {
 	if err := db.AutoMigrate(&models.Interview{}); err != nil {
 		fmt.Printf("Error migrating Interview model: %v\n", err)
 	}
+
+	if err := db.AutoMigrate(&models.Comment{}); err != nil {
+		fmt.Printf("Error migrating Comment model: %v\n", err)
+	}
 }

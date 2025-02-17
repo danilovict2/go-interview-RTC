@@ -56,6 +56,6 @@ const logout = () => {
     Cookies.remove('jwt');
     authStore.$reset();
 
-    router.push({ name: 'login' });
+    router.push({ name: 'Login' });
 };
 </script>

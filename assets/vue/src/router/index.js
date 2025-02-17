@@ -6,7 +6,7 @@ const router = createRouter({
     routes: [
         {
             path: '/',
-            name: 'home',
+            name: 'Home',
             component: HomeView,
             meta: {
                 requiresAuth: true,
@@ -14,17 +14,23 @@ const router = createRouter({
         },
         {
             path: '/register',
-            name: 'register',
+            name: 'Register',
             component: () => import('../views/RegisterView.vue'),
+            meta: {
+                requiresAuth: false,
+            },
         },
         {
             path: '/login',
-            name: 'login',
+            name: 'Login',
             component: () => import('../views/LoginView.vue'),
+            meta: {
+                requiresAuth: false,
+            },
         },
         {
             path: '/meetings/:id',
-            name: 'meeting',
+            name: 'Meeting',
             component: () => import('../views/MeetingView.vue'),
             meta: {
                 requiresAuth: true,
@@ -32,7 +38,7 @@ const router = createRouter({
         },
         {
             path: '/recordings',
-            name: 'recordings',
+            name: 'Recordings',
             component: () => import('../views/RecordingsView.vue'),
             meta: {
                 requiresAuth: true,
@@ -40,11 +46,24 @@ const router = createRouter({
         },
         {
             path: '/schedule',
-            name: 'schedule',
+            name: 'Schedule',
             component: () => import('../views/ScheduleView.vue'),
             meta: {
                 requiresAuth: true,
             },
+        },
+        {
+            path: '/dashboard',
+            name: 'Dashboard',
+            component: () => import('../views/DashboardView.vue'),
+            meta: {
+                requiresAuth: true,
+            },
+        },
+        {
+            path: '/:pathMatch(.*)*',
+            name: 'NotFound',
+            component: () => import('../views/NotFoundView.vue'),
         },
     ],
 });
@@ -55,7 +74,7 @@ router.beforeEach(async (to, from, next) => {
 
     if (to.meta.requiresAuth && !authStore.authUser) {
         next('/login');
-    } else if (!to.meta.requiresAuth && authStore.authUser) {
+    } else if (to.meta.requiresAuth === false && authStore.authUser) {
         next('/');
     } else {
         next();

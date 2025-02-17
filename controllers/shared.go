@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"errors"
+	"fmt"
 	"net/http"
 	"os"
 
@@ -35,4 +37,14 @@ func NewAPIConfig() (*APIConfig, error) {
 func HandleGracefully(err error, c echo.Context) error {
 	c.Logger().Error(err)
 	return c.String(http.StatusInternalServerError, "Whoops, something went wrong!")
+}
+
+func handleGormError(err error, model string, c echo.Context) error {
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return c.JSON(http.StatusNotFound, echo.Map{
+			"error": fmt.Sprintf("%s Not Found", model),
+		})
+	}
+
+	return HandleGracefully(err, c)
 }
