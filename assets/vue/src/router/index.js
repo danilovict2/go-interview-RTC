@@ -6,7 +6,7 @@ const router = createRouter({
     routes: [
         {
             path: '/',
-            name: 'home',
+            name: 'Home',
             component: HomeView,
             meta: {
                 requiresAuth: true,
@@ -14,7 +14,7 @@ const router = createRouter({
         },
         {
             path: '/register',
-            name: 'register',
+            name: 'Register',
             component: () => import('../views/RegisterView.vue'),
             meta: {
                 requiresAuth: false,
@@ -22,7 +22,7 @@ const router = createRouter({
         },
         {
             path: '/login',
-            name: 'login',
+            name: 'Login',
             component: () => import('../views/LoginView.vue'),
             meta: {
                 requiresAuth: false,
@@ -30,7 +30,7 @@ const router = createRouter({
         },
         {
             path: '/meetings/:id',
-            name: 'meeting',
+            name: 'Meeting',
             component: () => import('../views/MeetingView.vue'),
             meta: {
                 requiresAuth: true,
@@ -38,7 +38,7 @@ const router = createRouter({
         },
         {
             path: '/recordings',
-            name: 'recordings',
+            name: 'Recordings',
             component: () => import('../views/RecordingsView.vue'),
             meta: {
                 requiresAuth: true,
@@ -46,7 +46,7 @@ const router = createRouter({
         },
         {
             path: '/schedule',
-            name: 'schedule',
+            name: 'Schedule',
             component: () => import('../views/ScheduleView.vue'),
             meta: {
                 requiresAuth: true,
@@ -54,7 +54,7 @@ const router = createRouter({
         },
         {
             path: '/dashboard',
-            name: 'dashboard',
+            name: 'Dashboard',
             component: () => import('../views/DashboardView.vue'),
             meta: {
                 requiresAuth: true,

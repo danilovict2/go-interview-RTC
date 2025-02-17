@@ -28,7 +28,7 @@
                                 :call="call"
                                 @leave="
                                     call.leave();
-                                    router.push({ name: 'home' });
+                                    router.push({ name: 'Home' });
                                 "
                             />
 

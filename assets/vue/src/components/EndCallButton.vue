@@ -29,7 +29,7 @@ const endCall = async () => {
         );
         await call.endCall();
 
-        router.push({ name: 'home' });
+        router.push({ name: 'Home' });
         toast.success('The meeting ended for everyone');
     } catch (error) {
         console.log(error);

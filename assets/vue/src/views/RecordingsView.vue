@@ -36,7 +36,7 @@ const recordings = ref([]);
 
 const authUser = useAuthStore().authUser;
 if (authUser.role !== 'interviewer') {
-    router.push({ name: 'home' });
+    router.push({ name: 'Home' });
 }
 
 const getRecordings = async () => {

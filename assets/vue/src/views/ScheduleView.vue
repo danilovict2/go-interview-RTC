@@ -155,6 +155,7 @@ import SelectTrigger from '@/components/ui/select/SelectTrigger.vue';
 import SelectValue from '@/components/ui/select/SelectValue.vue';
 import Textarea from '@/components/ui/textarea/Textarea.vue';
 import UserInfo from '@/components/UserInfo.vue';
+import { useInterview } from '@/composables/interview';
 import router from '@/router';
 import { useAuthStore } from '@/stores/auth';
 import { getLocalTimeZone, today } from '@internationalized/date';
@@ -166,7 +167,7 @@ import { toast } from 'vue3-toastify';
 
 const authUser = useAuthStore().authUser;
 if (authUser.role !== 'interviewer') {
-    router.push({ name: 'home' });
+    router.push({ name: 'Home' });
 }
 
 const TIME_SLOTS = [
@@ -194,19 +195,6 @@ const candidates = ref([]);
 const interviewers = ref([]);
 const interviews = ref([]);
 
-const getInterviews = () => {
-    axios
-        .get('/interviews', {
-            headers: {
-                Authorization: `Bearer ${Cookies.get('jwt')}`,
-            },
-        })
-        .then((resp) => {
-            interviews.value = resp.data.interviews;
-        })
-        .catch((err) => toast.error(err));
-};
-
 const getUsers = () => {
     axios
         .get('/users', {
@@ -222,7 +210,7 @@ const getUsers = () => {
         .catch((err) => toast.error(err));
 };
 
-getInterviews();
+useInterview().getInterviews(interviews);
 getUsers();
 
 const selectedInterviewers = computed(() => {
@@ -303,7 +291,7 @@ const schedule = () => {
                 candidateUUID: '',
                 interviewerUUIDs: [authUser.uuid],
             });
-            getInterviews();
+            useInterview().getInterviews(interviews);
             toast.success('Meeting scheduled successfully!');
         })
         .catch((err) => console.log(err));
