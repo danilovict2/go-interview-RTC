@@ -16,13 +16,17 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <Card class="hover:shadow-md transition-all" v-for="interview in groupedInterviews[category.id]"
-                        :key="interview.id">
+                    <Card
+                        class="hover:shadow-md transition-all"
+                        v-for="interview in groupedInterviews[category.id]"
+                        :key="interview.id"
+                    >
                         <CardHeader class="p-4">
                             <div class="flex items-center gap-3">
                                 <Avatar class="h-10 w-10">
                                     <AvatarImage
-                                        :src="`https://api.dicebear.com/9.x/initials/svg/seed=${findCandidate(interview).first_name}-${findCandidate(interview).last_name}`" />
+                                        :src="`https://api.dicebear.com/9.x/initials/svg/seed=${findCandidate(interview).first_name}-${findCandidate(interview).last_name}`"
+                                    />
                                     <AvatarFallback>
                                         <UserCircle class="h-8 w-8" />
                                     </AvatarFallback>
@@ -54,18 +58,28 @@
                         </CardContent>
 
                         <CardFooter class="p-4 pt-0 flex flex-col gap-3">
-                            <div class="flex gap-2 w-full" v-if="interview.decision === 'undecided'">
-                                <Button variant="success" class="flex-1" @click="updateDecision(interview, 'pass')">
+                            <div
+                                class="flex gap-2 w-full"
+                                v-if="interview.decision === 'undecided'"
+                            >
+                                <Button
+                                    variant="success"
+                                    class="flex-1"
+                                    @click="updateDecision(interview, 'pass')"
+                                >
                                     <CheckCircle2 class="h-4 w-4 mr-2" />
                                     Pass
                                 </Button>
-                                <Button variant="destructive" class="flex-1"
-                                    @click="updateDecision(interview, 'fail')">
+                                <Button
+                                    variant="destructive"
+                                    class="flex-1"
+                                    @click="updateDecision(interview, 'fail')"
+                                >
                                     <XCircle class="h-4 w-4 mr-2" />
                                     Fail
                                 </Button>
                             </div>
-                            <CommentDialog :interviewID="interview.stream_call_id"/>
+                            <CommentDialog :interviewID="interview.stream_call_id" />
                         </CardFooter>
                     </Card>
                 </div>
@@ -120,7 +134,7 @@ const groupedInterviews = computed(() => {
         undecided: [],
     };
 
-    if (interviews.value.length === 0) return initial
+    if (interviews.value.length === 0) return initial;
 
     return interviews.value.reduce((acc, i) => {
         switch (i.decision) {
@@ -144,19 +158,22 @@ const findCandidate = (interview) => {
 };
 
 const updateDecision = (interview, decision) => {
-    axios.patch(
-        `/interviews/${interview.stream_call_id}/change_decision`,
-        {
-            decision: decision,
-        },
-        {
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Authorization': `Bearer ${Cookies.get('jwt')}`,
+    axios
+        .patch(
+            `/interviews/${interview.stream_call_id}/change_decision`,
+            {
+                decision: decision,
             },
-        },
-    ).then(() => {
-        useInterview().getInterviews(interviews);
-    }).catch(err => toast.error(err.response.data.message));
-}
+            {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    Authorization: `Bearer ${Cookies.get('jwt')}`,
+                },
+            },
+        )
+        .then(() => {
+            useInterview().getInterviews(interviews);
+        })
+        .catch((err) => toast.error(err.response.data.message));
+};
 </script>

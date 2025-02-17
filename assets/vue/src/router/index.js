@@ -18,7 +18,7 @@ const router = createRouter({
             component: () => import('../views/RegisterView.vue'),
             meta: {
                 requiresAuth: false,
-            }
+            },
         },
         {
             path: '/login',
@@ -26,7 +26,7 @@ const router = createRouter({
             component: () => import('../views/LoginView.vue'),
             meta: {
                 requiresAuth: false,
-            }
+            },
         },
         {
             path: '/meetings/:id',
@@ -60,10 +60,10 @@ const router = createRouter({
                 requiresAuth: true,
             },
         },
-        { 
-            path: '/:pathMatch(.*)*', 
-            name: 'NotFound', 
-            component: () => import('../views/NotFoundView.vue') 
+        {
+            path: '/:pathMatch(.*)*',
+            name: 'NotFound',
+            component: () => import('../views/NotFoundView.vue'),
         },
     ],
 });

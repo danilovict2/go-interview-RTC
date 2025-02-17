@@ -17,31 +17,46 @@
                     <div class="flex items-center justify-between">
                         <h4 class="text-sm font-medium">Previous Comments</h4>
                         <Badge variant="outline">
-                            {{ comments.length }} Comment{{ comments.length !== 1 ? "s" : "" }}
+                            {{ comments.length }} Comment{{ comments.length !== 1 ? 's' : '' }}
                         </Badge>
                     </div>
 
                     <ScrollArea class="h-[240px]">
                         <div class="space-y-4">
-                            <div v-for="comment in comments" :key="comment.id" class="rounded-lg border p-4 space-y-3">
+                            <div
+                                v-for="comment in comments"
+                                :key="comment.id"
+                                class="rounded-lg border p-4 space-y-3"
+                            >
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center gap-2">
                                         <Avatar class="h-8 w-8">
                                             <AvatarImage
-                                                :src="`https://api.dicebear.com/9.x/initials/svg/seed=${comment.created_by.first_name}-${comment.created_by.last_name}`" />
+                                                :src="`https://api.dicebear.com/9.x/initials/svg/seed=${comment.created_by.first_name}-${comment.created_by.last_name}`"
+                                            />
                                             <AvatarFallback>
                                                 <UserCircle class="h-6 w-6" />
                                             </AvatarFallback>
                                         </Avatar>
                                         <div>
-                                            <p class="text-sm font-medium">{{ comment.created_by.first_name + ' ' +
-                                                comment.created_by.last_name }}</p>
+                                            <p class="text-sm font-medium">
+                                                {{
+                                                    comment.created_by.first_name +
+                                                    ' ' +
+                                                    comment.created_by.last_name
+                                                }}
+                                            </p>
                                             <p class="text-xs text-muted-foreground">
-                                                {{ format(comment.CreatedAt, "MMM d, yyyy • h:mm a") }}
+                                                {{
+                                                    format(
+                                                        comment.CreatedAt,
+                                                        'MMM d, yyyy • h:mm a',
+                                                    )
+                                                }}
                                             </p>
                                         </div>
                                     </div>
-                                    <Stars :value="comment.rating" />
+                                    <StarRating :value="comment.rating" />
                                 </div>
                                 <p class="text-sm text-muted-foreground">{{ comment.content }}</p>
                             </div>
@@ -59,7 +74,7 @@
                             <SelectContent>
                                 <SelectItem v-for="index in 5" :key="index" :value="index">
                                     <div class="flex items-center gap-2">
-                                        <Stars :value="index" />
+                                        <StarRating :value="index" />
                                     </div>
                                 </SelectItem>
                             </SelectContent>
@@ -68,16 +83,17 @@
 
                     <div class="space-y-2">
                         <Label>Your Comment</Label>
-                        <Textarea v-model="comment" placeholder="Share your detailed comment about the candidate..."
-                            class="h-32" />
+                        <Textarea
+                            v-model="comment"
+                            placeholder="Share your detailed comment about the candidate..."
+                            class="h-32"
+                        />
                     </div>
                 </div>
             </div>
 
             <DialogFooter>
-                <Button variant="outline" @click="isOpen = false">
-                    Cancel
-                </Button>
+                <Button variant="outline" @click="isOpen = false"> Cancel </Button>
                 <Button @click="handleSubmit">Submit</Button>
             </DialogFooter>
         </DialogContent>
@@ -104,13 +120,13 @@ import SelectTrigger from './ui/select/SelectTrigger.vue';
 import SelectValue from './ui/select/SelectValue.vue';
 import SelectContent from './ui/select/SelectContent.vue';
 import SelectItem from './ui/select/SelectItem.vue';
-import Stars from './Stars.vue';
 import Textarea from './ui/textarea/Textarea.vue';
 import { DialogFooter } from './ui/dialog';
 import { format } from 'date-fns';
 import axios from 'axios';
 import { toast } from 'vue3-toastify';
 import Cookies from 'js-cookie';
+import StarRating from './StarRating.vue';
 
 const { interviewID } = defineProps({
     interviewID: String,
@@ -122,30 +138,40 @@ const rating = ref(1);
 const comment = ref('');
 
 const handleSubmit = () => {
-    axios.post('/comments/store', {
-        content: comment.value,
-        rating: rating.value,
-        interviewID: interviewID,
-    }, {
-        headers: {
-            'Authorization': `Bearer ${Cookies.get('jwt')}`,
-            'Content-Type': 'application/x-www-form-urlencoded',
-        }
-    }).then(resp => {
-        rating.value = 1;
-        comment.value = '';
-        comments.value.push(resp.data.comment);
-    }).catch(err => toast.error(err));
+    axios
+        .post(
+            '/comments/store',
+            {
+                content: comment.value,
+                rating: rating.value,
+                interviewID: interviewID,
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${Cookies.get('jwt')}`,
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+            },
+        )
+        .then((resp) => {
+            rating.value = 1;
+            comment.value = '';
+            comments.value.push(resp.data.comment);
+        })
+        .catch((err) => toast.error(err));
 };
 
 const getComments = (interviewID) => {
-    axios.get(`/interviews/${interviewID}/comments`, {
-        headers: {
-            'Authorization': `Bearer ${Cookies.get('jwt')}`,
-        }
-    }).then(resp => {
-        comments.value = resp.data.comments;
-    }).catch(err => toast.error(err.response.data.message));
+    axios
+        .get(`/interviews/${interviewID}/comments`, {
+            headers: {
+                Authorization: `Bearer ${Cookies.get('jwt')}`,
+            },
+        })
+        .then((resp) => {
+            comments.value = resp.data.comments;
+        })
+        .catch((err) => toast.error(err.response.data.message));
 };
 
 getComments(interviewID);

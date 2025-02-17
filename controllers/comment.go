@@ -36,18 +36,18 @@ func (cfg *APIConfig) CommentStore(c echo.Context) error {
 	}
 
 	comment := models.Comment{
-		Content: c.FormValue("content"),
-		Rating: rating,
+		Content:       c.FormValue("content"),
+		Rating:        rating,
 		CreatedByUUID: user.UUID,
-		CreatedBy: user,
-		InterviewID: interview.ID,
-		Interview: interview,
+		CreatedBy:     user,
+		InterviewID:   interview.ID,
+		Interview:     interview,
 	}
 
 	if err := cfg.DB.Create(&comment).Error; err != nil {
 		return HandleGracefully(err, c)
 	}
-	
+
 	return c.JSON(http.StatusOK, echo.Map{
 		"comment": comment,
 	})
