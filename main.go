@@ -72,6 +72,7 @@ func main() {
 	i.GET("", api.InterviewsGet)
 	i.POST("/store", api.InterviewStore)
 	i.PATCH("/:stream-call-id/end", api.InterviewEnd)
+	i.PATCH("/:stream-call-id/change_decision", api.InterviewChangeDecision)
 
 	e.Logger.Fatal(e.Start(os.Getenv("LISTEN_ADDR")))
 }
