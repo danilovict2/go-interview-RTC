@@ -65,6 +65,7 @@
                                     Fail
                                 </Button>
                             </div>
+                            <CommentDialog :interviewID="interview.stream_call_id"/>
                         </CardFooter>
                     </Card>
                 </div>
@@ -74,6 +75,7 @@
 </template>
 
 <script setup>
+import CommentDialog from '@/components/CommentDialog.vue';
 import Avatar from '@/components/ui/avatar/Avatar.vue';
 import AvatarFallback from '@/components/ui/avatar/AvatarFallback.vue';
 import AvatarImage from '@/components/ui/avatar/AvatarImage.vue';

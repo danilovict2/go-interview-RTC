@@ -91,7 +91,7 @@ func (cfg *APIConfig) InterviewEnd(c echo.Context) error {
 		return handleGormError(err, "Interview", c)
 	}
 
-	if !canModify(user, interview, ir) {
+	if !canAccess(user, interview, ir) {
 		return c.JSON(http.StatusUnauthorized, echo.Map{
 			"error": "You can not modify this resource",
 		})
@@ -112,7 +112,7 @@ func (cfg *APIConfig) InterviewEnd(c echo.Context) error {
 	return c.JSON(http.StatusOK, interview)
 }
 
-func canModify(user models.User, interview models.Interview, ir *repository.InterviewRepository) bool {
+func canAccess(user models.User, interview models.Interview, ir *repository.InterviewRepository) bool {
 	isAttendee, err := ir.IsAttendee(interview, user)
 	if err != nil {
 		return false
@@ -151,13 +151,13 @@ func (cfg *APIConfig) InterviewChangeDecision(c echo.Context) error {
 		return handleGormError(err, "Interview", c)
 	}
 
-	if !canModify(user, interview, ir) {
+	if !canAccess(user, interview, ir) {
 		return c.JSON(http.StatusUnauthorized, echo.Map{
 			"error": "You can not modify this resource",
 		})
 	}
 
-	decision := models.Decision(c.FormValue("decision"))	
+	decision := models.Decision(c.FormValue("decision"))
 	switch decision {
 	case models.DECISION_PASS, models.DECISION_FAIL, models.DECISION_UNDECIDED:
 		interview.Decision = decision
@@ -166,10 +166,39 @@ func (cfg *APIConfig) InterviewChangeDecision(c echo.Context) error {
 			"error": "Invalid decision value",
 		})
 	}
-	
+
 	if err := cfg.DB.Save(&interview).Error; err != nil {
 		return HandleGracefully(err, c)
 	}
 
 	return c.JSON(http.StatusOK, interview)
+}
+
+func (cfg *APIConfig) InterviewGetComments(c echo.Context) error {
+	ur := repository.NewUserRepository(cfg.DB)
+	user, err := ur.FindOneByUUID(c.Get("uuid").(string))
+	if err != nil {
+		return handleGormError(err, "User", c)
+	}
+
+	ir := repository.NewInterviewRepository(cfg.DB)
+	interview, err := ir.FindOneByStreamCallID(c.Param("stream-call-id"))
+	if err != nil {
+		return handleGormError(err, "Interview", c)
+	}
+
+	if !canAccess(user, interview, ir) {
+		return c.JSON(http.StatusUnauthorized, echo.Map{
+			"error": "You can not access this resource",
+		})
+	}
+
+	comments := make([]models.Comment, 0)
+	if err := cfg.DB.Where("interview_id = ?", interview.ID).Preload("CreatedBy").Find(&comments).Error; err != nil {
+		return HandleGracefully(err, c)
+	}
+
+	return c.JSON(http.StatusOK, echo.Map{
+		"comments": comments,
+	})
 }

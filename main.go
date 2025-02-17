@@ -62,6 +62,7 @@ func main() {
 
 	e.POST("/login", api.Login)
 	e.GET("/stream/token", api.StreamNewToken, echojwt.WithConfig(jwtConfig), mdw.UUIDFromJWT)
+	e.POST("/comments/store", api.CommentStore, echojwt.WithConfig(jwtConfig), mdw.UUIDFromJWT)
 
 	u := e.Group("/users")
 	u.GET("", api.UsersGet)
@@ -70,6 +71,7 @@ func main() {
 
 	i := e.Group("/interviews", echojwt.WithConfig(jwtConfig), mdw.UUIDFromJWT)
 	i.GET("", api.InterviewsGet)
+	i.GET("/:stream-call-id/comments", api.InterviewGetComments)
 	i.POST("/store", api.InterviewStore)
 	i.PATCH("/:stream-call-id/end", api.InterviewEnd)
 	i.PATCH("/:stream-call-id/change_decision", api.InterviewChangeDecision)
