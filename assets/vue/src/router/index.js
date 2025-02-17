@@ -16,11 +16,17 @@ const router = createRouter({
             path: '/register',
             name: 'register',
             component: () => import('../views/RegisterView.vue'),
+            meta: {
+                requiresAuth: false,
+            }
         },
         {
             path: '/login',
             name: 'login',
             component: () => import('../views/LoginView.vue'),
+            meta: {
+                requiresAuth: false,
+            }
         },
         {
             path: '/meetings/:id',
@@ -46,6 +52,19 @@ const router = createRouter({
                 requiresAuth: true,
             },
         },
+        {
+            path: '/dashboard',
+            name: 'dashboard',
+            component: () => import('../views/DashboardView.vue'),
+            meta: {
+                requiresAuth: true,
+            },
+        },
+        { 
+            path: '/:pathMatch(.*)*', 
+            name: 'NotFound', 
+            component: () => import('../views/NotFoundView.vue') 
+        },
     ],
 });
 
@@ -55,7 +74,7 @@ router.beforeEach(async (to, from, next) => {
 
     if (to.meta.requiresAuth && !authStore.authUser) {
         next('/login');
-    } else if (!to.meta.requiresAuth && authStore.authUser) {
+    } else if (to.meta.requiresAuth === false && authStore.authUser) {
         next('/');
     } else {
         next();
