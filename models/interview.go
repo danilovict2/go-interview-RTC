@@ -32,8 +32,4 @@ type Interview struct {
 	StreamCallID string     `json:"stream_call_id"`
 	Attendees    []User     `json:"attendees" gorm:"many2many:interview_attendees" validate:"required,min=1"`
 	Decision     Decision   `json:"decision"  gorm:"default:undecided"`
-
-	CreatedAt time.Time      `json:"created_at"`
-	UpdatedAt time.Time      `json:"updated_at"`
-	DeletedAt gorm.DeletedAt `json:"deleted_at"`
 }
