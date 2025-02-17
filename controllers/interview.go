@@ -202,3 +202,31 @@ func (cfg *APIConfig) InterviewGetComments(c echo.Context) error {
 		"comments": comments,
 	})
 }
+
+func (cfg *APIConfig) InterviewMarkLive(c echo.Context) error {
+	ur := repository.NewUserRepository(cfg.DB)
+	user, err := ur.FindOneByUUID(c.Get("uuid").(string))
+	if err != nil {
+		return handleGormError(err, "User", c)
+	}
+
+	ir := repository.NewInterviewRepository(cfg.DB)
+	interview, err := ir.FindOneByStreamCallID(c.Param("stream-call-id"))
+	if err != nil {
+		return handleGormError(err, "Interview", c)
+	}
+
+	if !canAccess(user, interview, ir) {
+		return c.JSON(http.StatusUnauthorized, echo.Map{
+			"error": "You can not modify this resource",
+		})
+	}
+
+	interview.Status = models.STATUS_LIVE
+
+	if err := cfg.DB.Save(&interview).Error; err != nil {
+		return HandleGracefully(err, c)
+	}
+
+	return c.JSON(http.StatusOK, interview)
+}
