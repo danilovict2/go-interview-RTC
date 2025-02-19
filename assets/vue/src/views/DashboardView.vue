@@ -178,6 +178,9 @@ const updateDecision = (interview, decision) => {
         .then(() => {
             useInterview().getInterviews(interviews, isLoading);
         })
-        .catch((err) => toast.error(err.response.data.message));
+        .catch(err => {
+            console.error("Failed to update decision:", err);
+            toast.error("Failed to update decision");
+        });
 };
 </script>

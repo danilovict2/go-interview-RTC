@@ -154,7 +154,10 @@ const handleSubmit = () => {
             comment.value = '';
             comments.value.push(resp.data.comment);
         })
-        .catch((err) => toast.error(err))
+        .catch(err => {
+            console.error("Failed to add comment:", err);
+            toast.error("Failed to add comment!");
+        })
         .finally(() => isLoading.value = false);
 };
 
@@ -169,7 +172,10 @@ const getComments = (interviewID) => {
         .then((resp) => {
             comments.value = resp.data.comments;
         })
-        .catch((err) => toast.error(err.response.data.message))
+        .catch(err => {
+            console.error("Couldn't load comments:", err);
+            toast.error("Couldn't load comments!");
+        })
         .finally(() => isLoading.value = false);
 };
 

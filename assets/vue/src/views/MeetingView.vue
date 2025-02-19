@@ -21,6 +21,7 @@ import MeetingSetup from '@/components/MeetingSetup.vue';
 import { useStreamStore } from '@/stores/stream';
 import { ref } from 'vue';
 import { useRoute } from 'vue-router';
+import { toast } from 'vue3-toastify';
 
 const route = useRoute();
 const callID = route.params.id;
@@ -40,6 +41,7 @@ const getCall = async (callID) => {
         }
     } catch (err) {
         console.log(err);
+        toast.error("Failed to load this call!");
     } finally {
         isCallLoading.value = false;
     }

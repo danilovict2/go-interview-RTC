@@ -89,6 +89,9 @@ const startInterview = () => {
         .then(() => {
             router.push({ name: 'Meeting', params: { id: interview.stream_call_id } })
         })
-        .catch(err => toast.error(err));
+        .catch(err => {
+            console.error("Failed to start the interview:", err);
+            toast.error("An error occured while starting the interview");
+        });
 };
 </script>

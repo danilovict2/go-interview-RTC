@@ -14,7 +14,10 @@ export function useInterview() {
             .then((resp) => {
                 dst.value = resp.data.interviews;
             })
-            .catch((err) => toast.error(err))
+            .catch(err => {
+                console.error("Couldn't get interviews:", err);
+                toast.error("Failed to load interviews");
+            })
             .finally(() =>  isLoading.value = false);
     };
 

@@ -98,6 +98,9 @@ axios.get(import.meta.env.VITE_LEET_CODE_API_URL + '/dailyQuestion')
             questionHTML: resp.data.data.activeDailyCodingChallengeQuestion.question.content,
         }
     })
-    .catch(err => toast.error(err))
+    .catch(error => {
+        console.error("Error loading the problem:", error);
+        toast.error("An error occurred while loading the problem");
+    })
     .finally(() => isLoading.value = false);
 </script>
