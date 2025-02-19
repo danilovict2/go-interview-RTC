@@ -31,6 +31,7 @@ import router from '@/router';
 import { useAuthStore } from '@/stores/auth';
 import { useStreamStore } from '@/stores/stream';
 import { ref } from 'vue';
+import { toast } from 'vue3-toastify';
 
 const recordings = ref([]);
 
@@ -55,6 +56,7 @@ const getRecordings = async () => {
         recordings.value = callRecordings.flatMap((call) => call.recordings);
     } catch (err) {
         console.log(err);
+        toast.error('Failed to load your recordings!');
     }
 };
 

@@ -1,5 +1,6 @@
 <template>
-    <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+    <AppLoading v-if="isLoading"></AppLoading>
+    <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8" v-else>
         <div class="sm:mx-auto sm:w-full sm:max-w-sm">
             <h2 class="mt-10 text-center text-2xl/9 font-bold tracking-tight">
                 Create a new account
@@ -93,13 +94,28 @@ import { Input } from '@/components/ui/input';
 import axios from 'axios';
 import { toast } from 'vue3-toastify';
 import router from '@/router';
+import AppLoading from '@/components/AppLoading.vue';
+import { ref } from 'vue';
 
 const formSchema = toTypedSchema(
     z.object({
-        first_name: z.string().min(1).max(50),
-        last_name: z.string().min(1).max(50),
-        email: z.string().min(2).max(50).email(),
-        password: z.string().min(8).max(50),
+        first_name: z
+            .string()
+            .min(1, 'Please provide a first name!')
+            .max(50, "First name can't be longer than 50 characters!"),
+        last_name: z
+            .string()
+            .min(1, 'Please provide a last name!')
+            .max(50, "Last name can't be longer than 50 characters!"),
+        email: z
+            .string()
+            .min(2, 'Email must be longer than 2 characters!')
+            .max(50, "Email can't be longer than 50 characters!")
+            .email('Please provide a valid email!'),
+        password: z
+            .string()
+            .min(8, 'Password must be at least 8 characters long!')
+            .max(50, "Password can't be longer than 50 characters!"),
     }),
 );
 
@@ -107,7 +123,10 @@ const { handleSubmit } = useForm({
     validationSchema: formSchema,
 });
 
+const isLoading = ref(false);
+
 const onSubmit = handleSubmit((values) => {
+    isLoading.value = true;
     axios
         .post('/users/store', values, {
             headers: {
@@ -118,6 +137,10 @@ const onSubmit = handleSubmit((values) => {
             document.cookie = `jwt=${resp.data.token};expires=${resp.data.expires};path=/;secure;`;
             router.push({ name: 'Home' });
         })
-        .catch((err) => toast.error(err.response.data));
+        .catch((err) => {
+            console.log('Registration Failed:', err);
+            toast.error('Registration Failed');
+        })
+        .finally(() => (isLoading.value = false));
 });
 </script>

@@ -1,5 +1,6 @@
 <template>
-    <div class="container max-w-7xl mx-auto p-6">
+    <AppLoading v-if="isLoading"></AppLoading>
+    <div class="container max-w-7xl mx-auto p-6" v-else>
         <div class="rounded-lg bg-card p-6 border shadow-sm mb-10">
             <h1
                 class="text-4xl font-bold bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text text-transparent"
@@ -57,15 +58,20 @@
 
 <script setup>
 import ActionCard from '@/components/ActionCard.vue';
+import AppLoading from '@/components/AppLoading.vue';
 import MeetingCard from '@/components/MeetingCard.vue';
 import MeetingModal from '@/components/MeetingModal.vue';
+import { useInterview } from '@/composables/interview';
 import router from '@/router';
 import { useAuthStore } from '@/stores/auth';
 import { Calendar, Clock, Code2, Users } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
-const authStore = useAuthStore();
 const interviews = ref([]);
+const isLoading = ref(false);
+useInterview().getInterviews(interviews, isLoading);
+
+const authStore = useAuthStore();
 const isInterviewer = computed(() => {
     return authStore.authUser?.role === 'interviewer';
 });

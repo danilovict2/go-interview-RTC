@@ -16,9 +16,10 @@ const { call } = defineProps({
 const endCall = async () => {
     try {
         await axios.patch(
-            `/interviews/${call.id}/end`,
+            `/interviews/${call.id}`,
             {
                 endTime: new Date().toUTCString(),
+                status: 'completed',
             },
             {
                 headers: {

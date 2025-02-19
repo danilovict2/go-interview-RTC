@@ -14,7 +14,7 @@
             </RouterLink>
 
             <div class="flex items-center space-x-4 ml-auto">
-                <DashboardButton v-show="authStore.authUser" />
+                <DashboardButton v-show="authStore.authUser?.role === 'interviewer'" />
                 <ModeToggle />
                 <ProfileDropdown v-show="authStore.authUser" />
             </div>

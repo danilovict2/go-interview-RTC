@@ -78,7 +78,7 @@ func (cfg *APIConfig) InterviewStore(c echo.Context) error {
 	return c.JSON(http.StatusOK, interview)
 }
 
-func (cfg *APIConfig) InterviewEnd(c echo.Context) error {
+func (cfg *APIConfig) InterviewPatch(c echo.Context) error {
 	ur := repository.NewUserRepository(cfg.DB)
 	user, err := ur.FindOneByUUID(c.Get("uuid").(string))
 	if err != nil {
@@ -97,13 +97,60 @@ func (cfg *APIConfig) InterviewEnd(c echo.Context) error {
 		})
 	}
 
-	endTime, err := time.Parse(http.TimeFormat, c.FormValue("endTime"))
-	if err != nil {
-		return HandleGracefully(err, c)
+	if title := c.FormValue("title"); title != "" {
+		interview.Title = title
 	}
 
-	interview.Status = models.STATUS_COMPLETED
-	interview.EndTime = &endTime
+	if description := c.FormValue("description"); description != "" {
+		interview.Description = description
+	}
+
+	if startTimeStr := c.FormValue("startTime"); startTimeStr != "" {
+		startTime, err := time.Parse(http.TimeFormat, startTimeStr)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, echo.Map{
+				"error": "Invalid Start Time",
+			})
+		}
+		interview.StartTime = startTime
+	}
+
+	if endTimeStr := c.FormValue("endTime"); endTimeStr != "" {
+		endTime, err := time.Parse(http.TimeFormat, endTimeStr)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, echo.Map{
+				"error": "Invalid End Time",
+			})
+		}
+		interview.EndTime = &endTime
+	}
+
+	if status := models.Status(c.FormValue("status")); status != "" {
+		switch status {
+		case models.STATUS_UPCOMING, models.STATUS_LIVE, models.STATUS_COMPLETED:
+			interview.Status = status
+		default:
+			return c.JSON(http.StatusBadRequest, echo.Map{
+				"error": "Invalid status value",
+			})
+		}
+	}
+
+	if decision := models.Decision(c.FormValue("decision")); decision != "" {
+		switch decision {
+		case models.DECISION_PASS, models.DECISION_FAIL, models.DECISION_UNDECIDED:
+			interview.Decision = decision
+		default:
+			return c.JSON(http.StatusBadRequest, echo.Map{
+				"error": "Invalid decision value",
+			})
+		}
+	}
+
+	validate := validator.New(validator.WithRequiredStructEnabled())
+	if err := validate.Struct(interview); err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
 
 	if err := cfg.DB.Save(&interview).Error; err != nil {
 		return HandleGracefully(err, c)
@@ -136,42 +183,6 @@ func (cfg *APIConfig) InterviewsGet(c echo.Context) error {
 	return c.JSON(http.StatusOK, echo.Map{
 		"interviews": interviews,
 	})
-}
-
-func (cfg *APIConfig) InterviewChangeDecision(c echo.Context) error {
-	ur := repository.NewUserRepository(cfg.DB)
-	user, err := ur.FindOneByUUID(c.Get("uuid").(string))
-	if err != nil {
-		return handleGormError(err, "User", c)
-	}
-
-	ir := repository.NewInterviewRepository(cfg.DB)
-	interview, err := ir.FindOneByStreamCallID(c.Param("stream-call-id"))
-	if err != nil {
-		return handleGormError(err, "Interview", c)
-	}
-
-	if !canAccess(user, interview, ir) {
-		return c.JSON(http.StatusUnauthorized, echo.Map{
-			"error": "You can not modify this resource",
-		})
-	}
-
-	decision := models.Decision(c.FormValue("decision"))
-	switch decision {
-	case models.DECISION_PASS, models.DECISION_FAIL, models.DECISION_UNDECIDED:
-		interview.Decision = decision
-	default:
-		return c.JSON(http.StatusBadRequest, echo.Map{
-			"error": "Invalid decision value",
-		})
-	}
-
-	if err := cfg.DB.Save(&interview).Error; err != nil {
-		return HandleGracefully(err, c)
-	}
-
-	return c.JSON(http.StatusOK, interview)
 }
 
 func (cfg *APIConfig) InterviewGetComments(c echo.Context) error {

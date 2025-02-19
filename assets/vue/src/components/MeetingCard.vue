@@ -9,17 +9,17 @@
 
                 <Badge
                     :variant="
-                        interview.status === 'live'
+                        status === 'live'
                             ? 'default'
-                            : interview.status === 'upcoming'
+                            : status === 'upcoming'
                               ? 'secondary'
                               : 'outline'
                     "
                 >
                     {{
-                        interview.status === 'live'
+                        status === 'live'
                             ? 'Live Now'
-                            : interview.status === 'upcoming'
+                            : status === 'upcoming'
                               ? 'Upcoming'
                               : 'Completed'
                     }}
@@ -35,20 +35,21 @@
 
         <CardContent>
             <Button
-                v-if="interview.status === 'live'"
+                v-if="status === 'live'"
                 class="w-full"
-                @click="console.log('join meeting')"
+                @click="router.push({ name: 'Meeting', params: { id: interview.stream_call_id } })"
             >
                 Join Meeting
             </Button>
 
             <Button
-                v-else-if="interview.status === 'upcoming'"
-                variant="outline"
+                v-else-if="status === 'upcoming'"
+                :variant="authUser.role === 'candidate' ? 'outline' : 'default'"
                 class="w-full"
-                disabled
+                :disabled="authUser.role === 'candidate'"
+                @click="startInterview"
             >
-                Waiting to Start
+                {{ authUser.role === 'candidate' ? 'Waiting to Start' : 'Start Interview' }}
             </Button>
         </CardContent>
     </Card>
@@ -64,10 +65,44 @@ import CardDescription from './ui/card/CardDescription.vue';
 import CardContent from './ui/card/CardContent.vue';
 import Button from './ui/button/Button.vue';
 import { format } from 'date-fns';
+import { ref } from 'vue';
+import axios from 'axios';
+import { toast } from 'vue3-toastify';
+import Cookies from 'js-cookie';
+import router from '@/router';
+import { useAuthStore } from '@/stores/auth';
+
+const authUser = useAuthStore().authUser;
 
 const { interview } = defineProps({
     interview: Object,
 });
 
-const formattedStartTime = format(new Date(interview.start_time), 'MMM d, yyyy, hh:mm a');
+const startTime = new Date(interview.start_time);
+const status = ref(interview.status);
+const formattedStartTime = format(startTime, 'MMM d, yyyy, hh:mm a');
+
+const startInterview = () => {
+    status.value = 'live';
+    axios
+        .patch(
+            `/interviews/${interview.stream_call_id}`,
+            {
+                status: 'live',
+            },
+            {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    Authorization: `Bearer ${Cookies.get('jwt')}`,
+                },
+            },
+        )
+        .then(() => {
+            router.push({ name: 'Meeting', params: { id: interview.stream_call_id } });
+        })
+        .catch((err) => {
+            console.error('Failed to start the interview:', err);
+            toast.error('An error occured while starting the interview');
+        });
+};
 </script>
