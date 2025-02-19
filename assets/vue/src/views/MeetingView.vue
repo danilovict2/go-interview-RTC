@@ -41,7 +41,7 @@ const getCall = async (callID) => {
         }
     } catch (err) {
         console.log(err);
-        toast.error("Failed to load this call!");
+        toast.error('Failed to load this call!');
     } finally {
         isCallLoading.value = false;
     }

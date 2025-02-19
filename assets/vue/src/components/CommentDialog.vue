@@ -24,12 +24,17 @@
 
                     <ScrollArea class="h-[240px]">
                         <div class="space-y-4">
-                            <div v-for="comment in comments" :key="comment.id" class="rounded-lg border p-4 space-y-3">
+                            <div
+                                v-for="comment in comments"
+                                :key="comment.id"
+                                class="rounded-lg border p-4 space-y-3"
+                            >
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center gap-2">
                                         <Avatar class="h-8 w-8">
                                             <AvatarImage
-                                                :src="`https://api.dicebear.com/9.x/initials/svg/seed=${comment.created_by.first_name}-${comment.created_by.last_name}`" />
+                                                :src="`https://api.dicebear.com/9.x/initials/svg/seed=${comment.created_by.first_name}-${comment.created_by.last_name}`"
+                                            />
                                             <AvatarFallback>
                                                 <UserCircle class="h-6 w-6" />
                                             </AvatarFallback>
@@ -79,8 +84,11 @@
 
                     <div class="space-y-2">
                         <Label>Your Comment</Label>
-                        <Textarea v-model="comment" placeholder="Share your detailed comment about the candidate..."
-                            class="h-32" />
+                        <Textarea
+                            v-model="comment"
+                            placeholder="Share your detailed comment about the candidate..."
+                            class="h-32"
+                        />
                     </div>
                 </div>
             </div>
@@ -154,11 +162,11 @@ const handleSubmit = () => {
             comment.value = '';
             comments.value.push(resp.data.comment);
         })
-        .catch(err => {
-            console.error("Failed to add comment:", err);
-            toast.error("Failed to add comment!");
+        .catch((err) => {
+            console.error('Failed to add comment:', err);
+            toast.error('Failed to add comment!');
         })
-        .finally(() => isLoading.value = false);
+        .finally(() => (isLoading.value = false));
 };
 
 const getComments = (interviewID) => {
@@ -172,11 +180,11 @@ const getComments = (interviewID) => {
         .then((resp) => {
             comments.value = resp.data.comments;
         })
-        .catch(err => {
+        .catch((err) => {
             console.error("Couldn't load comments:", err);
             toast.error("Couldn't load comments!");
         })
-        .finally(() => isLoading.value = false);
+        .finally(() => (isLoading.value = false));
 };
 
 getComments(interviewID);

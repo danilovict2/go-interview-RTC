@@ -56,7 +56,7 @@ const getRecordings = async () => {
         recordings.value = callRecordings.flatMap((call) => call.recordings);
     } catch (err) {
         console.log(err);
-        toast.error("Failed to load your recordings!");
+        toast.error('Failed to load your recordings!');
     }
 };
 

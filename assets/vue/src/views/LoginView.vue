@@ -74,8 +74,15 @@ import { ref } from 'vue';
 
 const formSchema = toTypedSchema(
     z.object({
-        email: z.string().min(2, "Email must be longer than 2 characters!").max(50, "Email can't be longer than 50 characters!").email("Please provide a valid email!"),
-        password: z.string().min(8, "Password must be at least 8 characters long!").max(50, "Password can't be longer than 50 characters!"),
+        email: z
+            .string()
+            .min(2, 'Email must be longer than 2 characters!')
+            .max(50, "Email can't be longer than 50 characters!")
+            .email('Please provide a valid email!'),
+        password: z
+            .string()
+            .min(8, 'Password must be at least 8 characters long!')
+            .max(50, "Password can't be longer than 50 characters!"),
     }),
 );
 
@@ -97,10 +104,10 @@ const onSubmit = handleSubmit((values) => {
             document.cookie = `jwt=${resp.data.token};expires=${resp.data.expires};path=/;secure;`;
             router.push({ name: 'Home' });
         })
-        .catch(err => {
-            console.error("Login Failed:", err);
+        .catch((err) => {
+            console.error('Login Failed:', err);
             toast.error('Login Failed');
         })
-        .finally(() => isLoading.value = false);
+        .finally(() => (isLoading.value = false));
 });
 </script>

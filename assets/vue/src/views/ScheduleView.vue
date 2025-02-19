@@ -210,9 +210,9 @@ const getUsers = () => {
             candidates.value = users.filter((u) => u.role === 'candidate');
             interviewers.value = users.filter((u) => u.role === 'interviewer');
         })
-        .catch(err => {
-            console.error("Failed to load users:", err);
-            toast.error("Failed to load users!");
+        .catch((err) => {
+            console.error('Failed to load users:', err);
+            toast.error('Failed to load users!');
         });
 };
 
@@ -300,9 +300,9 @@ const schedule = () => {
             useInterview().getInterviews(interviews, isLoading);
             toast.success('Meeting scheduled successfully!');
         })
-        .catch(err => {
-            console.error("Failed to schedule the meeting:", err);
-            toast.error("Failed to schedule the meeting!")
+        .catch((err) => {
+            console.error('Failed to schedule the meeting:', err);
+            toast.error('Failed to schedule the meeting!');
         });
 };
 </script>

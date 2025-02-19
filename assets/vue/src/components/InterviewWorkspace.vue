@@ -5,7 +5,9 @@
             <ScrollArea class="h-full">
                 <div class="p-6">
                     <div class="max-w-4xl mx-auto space-y-6">
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div
+                            class="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                        >
                             <div class="space-y-1">
                                 <div class="flex items-center gap-2">
                                     <h2 class="text-2xl font-semibold tracking-tight">
@@ -24,7 +26,11 @@
                                         </SelectValue>
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem v-for="lang in supportedLanguages" :key="lang[0]" :value="lang[0]">
+                                        <SelectItem
+                                            v-for="lang in supportedLanguages"
+                                            :key="lang[0]"
+                                            :value="lang[0]"
+                                        >
                                             <div class="flex items-center gap-2">
                                                 {{ lang[1] }}
                                             </div>
@@ -44,8 +50,13 @@
 
         <ResizablePanel :default-size="60" :max-size="100">
             <div class="h-full relative">
-                <VueMonacoEditor height="100%" :default-language="language" :language="language" theme="vs-dark"
-                    v-model:value="code" :options="{
+                <VueMonacoEditor
+                    height="100%"
+                    :default-language="language"
+                    :language="language"
+                    theme="vs-dark"
+                    v-model:value="code"
+                    :options="{
                         minimap: { enabled: false },
                         fontSize: 18,
                         lineNumbers: 'on',
@@ -54,7 +65,8 @@
                         padding: { top: 16, bottom: 16 },
                         wordWrap: 'on',
                         wrappingIndent: 'indent',
-                    }">
+                    }"
+                >
                 </VueMonacoEditor>
             </div>
         </ResizablePanel>
@@ -78,7 +90,6 @@ import axios from 'axios';
 import { toast } from 'vue3-toastify';
 import AppLoading from './AppLoading.vue';
 
-
 const supportedLanguages = [
     ['go', 'Go'],
     ['python', 'Python'],
@@ -91,16 +102,17 @@ const selectedQuestion = ref({});
 const language = ref(supportedLanguages[0][0]);
 const code = ref('');
 
-axios.get(import.meta.env.VITE_LEET_CODE_API_URL + '/dailyQuestion')
-    .then(resp => {
+axios
+    .get(import.meta.env.VITE_LEET_CODE_API_URL + '/dailyQuestion')
+    .then((resp) => {
         selectedQuestion.value = {
             title: resp.data.data.activeDailyCodingChallengeQuestion.question.title,
             questionHTML: resp.data.data.activeDailyCodingChallengeQuestion.question.content,
-        }
+        };
     })
-    .catch(error => {
-        console.error("Error loading the problem:", error);
-        toast.error("An error occurred while loading the problem");
+    .catch((error) => {
+        console.error('Error loading the problem:', error);
+        toast.error('An error occurred while loading the problem');
     })
-    .finally(() => isLoading.value = false);
+    .finally(() => (isLoading.value = false));
 </script>
