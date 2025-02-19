@@ -95,9 +95,9 @@ const onSubmit = handleSubmit((values) => {
         })
         .then((resp) => {
             document.cookie = `jwt=${resp.data.token};expires=${resp.data.expires};path=/;secure;`;
-            isLoading.value = false;
             router.push({ name: 'Home' });
         })
-        .catch((err) => toast.error(err.response.data));
+        .catch((err) => toast.error(err.response.data))
+        .finally(() => isLoading.value = false);
 });
 </script>

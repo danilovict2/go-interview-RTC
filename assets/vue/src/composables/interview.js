@@ -13,9 +13,9 @@ export function useInterview() {
             })
             .then((resp) => {
                 dst.value = resp.data.interviews;
-                isLoading.value = false;
             })
-            .catch((err) => toast.error(err));
+            .catch((err) => toast.error(err))
+            .finally(() =>  isLoading.value = false);
     };
 
     return { getInterviews };

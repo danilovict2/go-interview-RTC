@@ -72,10 +72,10 @@ const startMeeting = () => {
                 },
             )
             .then((resp) => {
-                isLoading.value = false;
                 router.push({ name: 'Meeting', params: { id: resp.data.stream_call_id } });
             })
-            .catch((err) => toast.error(err.response.data.message));
+            .catch((err) => toast.error(err.response.data.message))
+            .finally(() => isLoading.value = false);
     }
 };
 </script>

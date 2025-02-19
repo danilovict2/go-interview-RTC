@@ -1,5 +1,5 @@
 <template>
-    <AppLoading v-if="isLoading"/>
+    <AppLoading v-if="isLoading" />
     <Dialog :open="isOpen" @update:open="isOpen = !isOpen">
         <DialogTrigger asChild>
             <Button variant="secondary" class="w-full">
@@ -24,17 +24,12 @@
 
                     <ScrollArea class="h-[240px]">
                         <div class="space-y-4">
-                            <div
-                                v-for="comment in comments"
-                                :key="comment.id"
-                                class="rounded-lg border p-4 space-y-3"
-                            >
+                            <div v-for="comment in comments" :key="comment.id" class="rounded-lg border p-4 space-y-3">
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center gap-2">
                                         <Avatar class="h-8 w-8">
                                             <AvatarImage
-                                                :src="`https://api.dicebear.com/9.x/initials/svg/seed=${comment.created_by.first_name}-${comment.created_by.last_name}`"
-                                            />
+                                                :src="`https://api.dicebear.com/9.x/initials/svg/seed=${comment.created_by.first_name}-${comment.created_by.last_name}`" />
                                             <AvatarFallback>
                                                 <UserCircle class="h-6 w-6" />
                                             </AvatarFallback>
@@ -84,11 +79,8 @@
 
                     <div class="space-y-2">
                         <Label>Your Comment</Label>
-                        <Textarea
-                            v-model="comment"
-                            placeholder="Share your detailed comment about the candidate..."
-                            class="h-32"
-                        />
+                        <Textarea v-model="comment" placeholder="Share your detailed comment about the candidate..."
+                            class="h-32" />
                     </div>
                 </div>
             </div>
@@ -161,9 +153,9 @@ const handleSubmit = () => {
             rating.value = 1;
             comment.value = '';
             comments.value.push(resp.data.comment);
-            isLoading.value = false;
         })
-        .catch((err) => toast.error(err));
+        .catch((err) => toast.error(err))
+        .finally(() => isLoading.value = false);
 };
 
 const getComments = (interviewID) => {
@@ -176,9 +168,9 @@ const getComments = (interviewID) => {
         })
         .then((resp) => {
             comments.value = resp.data.comments;
-            isLoading.value = false;
         })
-        .catch((err) => toast.error(err.response.data.message));
+        .catch((err) => toast.error(err.response.data.message))
+        .finally(() => isLoading.value = false);
 };
 
 getComments(interviewID);
