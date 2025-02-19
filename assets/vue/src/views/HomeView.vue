@@ -67,7 +67,6 @@ import { useAuthStore } from '@/stores/auth';
 import { Calendar, Clock, Code2, Users } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
-
 const interviews = ref([]);
 const isLoading = ref(false);
 useInterview().getInterviews(interviews, isLoading);

@@ -1,5 +1,5 @@
 <template>
-    <AppLoading v-if="isLoading"/>
+    <AppLoading v-if="isLoading" />
     <div class="container mx-auto py-10" v-else>
         <div class="flex items-center mb-8">
             <RouterLink to="/schedule">
@@ -178,9 +178,9 @@ const updateDecision = (interview, decision) => {
         .then(() => {
             useInterview().getInterviews(interviews, isLoading);
         })
-        .catch(err => {
-            console.error("Failed to update decision:", err);
-            toast.error("Failed to update decision");
+        .catch((err) => {
+            console.error('Failed to update decision:', err);
+            toast.error('Failed to update decision');
         });
 };
 </script>

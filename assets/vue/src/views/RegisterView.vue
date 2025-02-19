@@ -12,8 +12,12 @@
                     <FormItem v-auto-animate>
                         <FormLabel class="block text-sm/6 font-medium">First Name</FormLabel>
                         <FormControl class="mt-2">
-                            <Input type="text" v-bind="componentField" placeholder="First name..."
-                                class="block w-full rounded-md px-3 py-1.5 text-base outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
+                            <Input
+                                type="text"
+                                v-bind="componentField"
+                                placeholder="First name..."
+                                class="block w-full rounded-md px-3 py-1.5 text-base outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                            />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -22,8 +26,12 @@
                     <FormItem v-auto-animate>
                         <FormLabel class="block text-sm/6 font-medium">Last Name</FormLabel>
                         <FormControl class="mt-2">
-                            <Input type="text" v-bind="componentField" placeholder="Last name..."
-                                class="block w-full rounded-md px-3 py-1.5 text-base outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
+                            <Input
+                                type="text"
+                                v-bind="componentField"
+                                placeholder="Last name..."
+                                class="block w-full rounded-md px-3 py-1.5 text-base outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                            />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -32,8 +40,12 @@
                     <FormItem v-auto-animate>
                         <FormLabel class="block text-sm/6 font-medium">Email</FormLabel>
                         <FormControl class="mt-2">
-                            <Input type="email" v-bind="componentField" placeholder="Enter your email..."
-                                class="block w-full rounded-md px-3 py-1.5 text-base outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
+                            <Input
+                                type="email"
+                                v-bind="componentField"
+                                placeholder="Enter your email..."
+                                class="block w-full rounded-md px-3 py-1.5 text-base outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                            />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -42,15 +54,21 @@
                     <FormItem v-auto-animate>
                         <FormLabel class="block text-sm/6 font-medium">Password</FormLabel>
                         <FormControl class="mt-2">
-                            <Input type="password" v-bind="componentField" placeholder="Create a password..."
-                                class="block w-full rounded-md px-3 py-1.5 text-base outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
+                            <Input
+                                type="password"
+                                v-bind="componentField"
+                                placeholder="Create a password..."
+                                class="block w-full rounded-md px-3 py-1.5 text-base outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                            />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
                 </FormField>
 
-                <Button type="submit"
-                    class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                <Button
+                    type="submit"
+                    class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                >
                     Register
                 </Button>
             </form>
@@ -81,10 +99,23 @@ import { ref } from 'vue';
 
 const formSchema = toTypedSchema(
     z.object({
-        first_name: z.string().min(1, "Please provide a first name!").max(50, "First name can't be longer than 50 characters!"),
-        last_name: z.string().min(1, "Please provide a last name!").max(50, "Last name can't be longer than 50 characters!"),
-        email: z.string().min(2, "Email must be longer than 2 characters!").max(50, "Email can't be longer than 50 characters!").email("Please provide a valid email!"),
-        password: z.string().min(8, "Password must be at least 8 characters long!").max(50, "Password can't be longer than 50 characters!"),
+        first_name: z
+            .string()
+            .min(1, 'Please provide a first name!')
+            .max(50, "First name can't be longer than 50 characters!"),
+        last_name: z
+            .string()
+            .min(1, 'Please provide a last name!')
+            .max(50, "Last name can't be longer than 50 characters!"),
+        email: z
+            .string()
+            .min(2, 'Email must be longer than 2 characters!')
+            .max(50, "Email can't be longer than 50 characters!")
+            .email('Please provide a valid email!'),
+        password: z
+            .string()
+            .min(8, 'Password must be at least 8 characters long!')
+            .max(50, "Password can't be longer than 50 characters!"),
     }),
 );
 
@@ -106,10 +137,10 @@ const onSubmit = handleSubmit((values) => {
             document.cookie = `jwt=${resp.data.token};expires=${resp.data.expires};path=/;secure;`;
             router.push({ name: 'Home' });
         })
-        .catch(err => {
-            console.log("Registration Failed:", err);
-            toast.error("Registration Failed");
+        .catch((err) => {
+            console.log('Registration Failed:', err);
+            toast.error('Registration Failed');
         })
-        .finally(() => isLoading.value = false);
+        .finally(() => (isLoading.value = false));
 });
 </script>

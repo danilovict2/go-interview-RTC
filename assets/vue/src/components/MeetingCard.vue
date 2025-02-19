@@ -7,36 +7,48 @@
                     {{ formattedStartTime }}
                 </div>
 
-                <Badge :variant="status === 'live'
-                    ? 'default'
-                    : status === 'upcoming'
-                        ? 'secondary'
-                        : 'outline'
-                    ">
+                <Badge
+                    :variant="
+                        status === 'live'
+                            ? 'default'
+                            : status === 'upcoming'
+                              ? 'secondary'
+                              : 'outline'
+                    "
+                >
                     {{
                         status === 'live'
                             ? 'Live Now'
                             : status === 'upcoming'
-                                ? 'Upcoming'
-                                : 'Completed'
+                              ? 'Upcoming'
+                              : 'Completed'
                     }}
                 </Badge>
             </div>
 
             <CardTitle>{{ interview.title }}</CardTitle>
 
-            <CardDescription v-show="interview.description !== ''" class="line-clamp-2">{{ interview.description }}
+            <CardDescription v-show="interview.description !== ''" class="line-clamp-2"
+                >{{ interview.description }}
             </CardDescription>
         </CardHeader>
 
         <CardContent>
-            <Button v-if="status === 'live'" class="w-full"
-                @click="router.push({ name: 'Meeting', params: { id: interview.stream_call_id } });">
+            <Button
+                v-if="status === 'live'"
+                class="w-full"
+                @click="router.push({ name: 'Meeting', params: { id: interview.stream_call_id } })"
+            >
                 Join Meeting
             </Button>
 
-            <Button v-else-if="status === 'upcoming'" :variant="authUser.role === 'candidate' ? 'outline' : 'default'"
-                class="w-full" :disabled="authUser.role === 'candidate'" @click="startInterview">
+            <Button
+                v-else-if="status === 'upcoming'"
+                :variant="authUser.role === 'candidate' ? 'outline' : 'default'"
+                class="w-full"
+                :disabled="authUser.role === 'candidate'"
+                @click="startInterview"
+            >
                 {{ authUser.role === 'candidate' ? 'Waiting to Start' : 'Start Interview' }}
             </Button>
         </CardContent>
@@ -60,7 +72,6 @@ import Cookies from 'js-cookie';
 import router from '@/router';
 import { useAuthStore } from '@/stores/auth';
 
-
 const authUser = useAuthStore().authUser;
 
 const { interview } = defineProps({
@@ -71,27 +82,27 @@ const startTime = new Date(interview.start_time);
 const status = ref(interview.status);
 const formattedStartTime = format(startTime, 'MMM d, yyyy, hh:mm a');
 
-
 const startInterview = () => {
     status.value = 'live';
-    axios.patch(
-        `/interviews/${interview.stream_call_id}`,
-        {
-            status: 'live',
-        },
-        {
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                Authorization: `Bearer ${Cookies.get('jwt')}`,
+    axios
+        .patch(
+            `/interviews/${interview.stream_call_id}`,
+            {
+                status: 'live',
             },
-        },
-    )
+            {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    Authorization: `Bearer ${Cookies.get('jwt')}`,
+                },
+            },
+        )
         .then(() => {
-            router.push({ name: 'Meeting', params: { id: interview.stream_call_id } })
+            router.push({ name: 'Meeting', params: { id: interview.stream_call_id } });
         })
-        .catch(err => {
-            console.error("Failed to start the interview:", err);
-            toast.error("An error occured while starting the interview");
+        .catch((err) => {
+            console.error('Failed to start the interview:', err);
+            toast.error('An error occured while starting the interview');
         });
 };
 </script>

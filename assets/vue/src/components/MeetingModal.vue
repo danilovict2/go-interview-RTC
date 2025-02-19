@@ -74,11 +74,11 @@ const startMeeting = () => {
             .then((resp) => {
                 router.push({ name: 'Meeting', params: { id: resp.data.stream_call_id } });
             })
-            .catch(err => {
-                console.error('Failed to start an instant meeting:', err)
-                toast.error('Failed to start an instant meeting')
+            .catch((err) => {
+                console.error('Failed to start an instant meeting:', err);
+                toast.error('Failed to start an instant meeting');
             })
-            .finally(() => isLoading.value = false);
+            .finally(() => (isLoading.value = false));
     }
 };
 </script>
