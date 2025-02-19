@@ -164,7 +164,7 @@ const findCandidate = (interview) => {
 const updateDecision = (interview, decision) => {
     axios
         .patch(
-            `/interviews/${interview.stream_call_id}/change_decision`,
+            `/interviews/${interview.stream_call_id}`,
             {
                 decision: decision,
             },

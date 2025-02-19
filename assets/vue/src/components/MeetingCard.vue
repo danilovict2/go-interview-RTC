@@ -75,8 +75,10 @@ const formattedStartTime = format(startTime, 'MMM d, yyyy, hh:mm a');
 const startInterview = () => {
     status.value = 'live';
     axios.patch(
-        `/interviews/${interview.stream_call_id}/mark_live`,
-        null,
+        `/interviews/${interview.stream_call_id}`,
+        {
+            status: 'live',
+        },
         {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
