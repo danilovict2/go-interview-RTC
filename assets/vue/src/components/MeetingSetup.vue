@@ -1,5 +1,6 @@
 <template>
-    <div class="min-h-screen flex items-center justify-center p-6 bg-background/95">
+    <AppLoading v-if="isLoading" />
+    <div class="min-h-screen flex items-center justify-center p-6 bg-background/95" v-else>
         <div class="w-full max-w-[1200px] mx-auto">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Card class="md:col-span-1 p-6 flex flex-col">
@@ -112,6 +113,8 @@ import Button from './ui/button/Button.vue';
 import VideoPreview from './VideoPreview.vue';
 import DeviceSettings from './DeviceSettings.vue';
 import { useCallControlls } from '@/composables/callControls';
+import AppLoading from './AppLoading.vue';
+import { ref } from 'vue';
 
 const emit = defineEmits(['setup-complete']);
 
@@ -120,9 +123,12 @@ const { call } = defineProps({
 });
 
 const { isCameraEnabled, isMicEnabled } = useCallControlls(call);
+const isLoading = ref(false);
 
 const handleJoin = async () => {
+    isLoading.value = true;
     await call.join();
+    isLoading.value = false;
     emit('setup-complete');
 };
 </script>

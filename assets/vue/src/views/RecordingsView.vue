@@ -1,5 +1,6 @@
 <template>
-    <div class="container max-w-7xl mx-auto p-6">
+    <AppLoading v-if="isLoading" />
+    <div class="container max-w-7xl mx-auto p-6" v-else>
         <h1 class="text-3xl font-bold">Recordings</h1>
         <p class="text-muted-foreground my-1">
             {{ recordings.length }}
@@ -25,6 +26,7 @@
 </template>
 
 <script setup>
+import AppLoading from '@/components/AppLoading.vue';
 import RecordingCard from '@/components/RecordingCard.vue';
 import ScrollArea from '@/components/ui/scroll-area/ScrollArea.vue';
 import router from '@/router';
@@ -34,6 +36,7 @@ import { ref } from 'vue';
 import { toast } from 'vue3-toastify';
 
 const recordings = ref([]);
+const isLoading = ref(false);
 
 const authUser = useAuthStore().authUser;
 if (authUser.role !== 'interviewer') {
@@ -43,6 +46,7 @@ if (authUser.role !== 'interviewer') {
 const getRecordings = async () => {
     const client = useStreamStore().client;
     const authUser = useAuthStore().authUser;
+    isLoading.value = true;
     try {
         const { calls } = await client.queryCalls({
             sort: [{ field: 'starts_at', direction: -1 }],
@@ -57,6 +61,8 @@ const getRecordings = async () => {
     } catch (err) {
         console.log(err);
         toast.error('Failed to load your recordings!');
+    } finally {
+        isLoading.value = false;
     }
 };
 
