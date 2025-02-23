@@ -38,8 +38,10 @@ docker compose up --build
 
 ### Run locally
 
-First, open the `.env` file and comment out the existing `DATABASE_DSN` line. Then, uncomment the alternative `DATABASE_DSN` line.
-Then simply run:
+First, open the `.env` file and comment out the existing `DATABASE_DSN` line. Uncomment the alternative `DATABASE_DSN` line. Ensure you have created the `interview-rtc` database in PostgreSQL.
+
+Then, run the following command:
+
 ```bash
 make run
 ```
