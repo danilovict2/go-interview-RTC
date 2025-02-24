@@ -70,7 +70,7 @@
             <ResizableHandle with-handle />
 
             <ResizablePanel :default-size="65" :min-size="25">
-                <InterviewWorkspace />
+                <InterviewWorkspace :call="call" />
             </ResizablePanel>
         </ResizablePanelGroup>
     </div>

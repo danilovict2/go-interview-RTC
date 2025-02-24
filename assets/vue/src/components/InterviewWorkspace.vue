@@ -79,7 +79,7 @@ import ResizablePanelGroup from './ui/resizable/ResizablePanelGroup.vue';
 import Select from './ui/select/Select.vue';
 import SelectTrigger from './ui/select/SelectTrigger.vue';
 import SelectValue from './ui/select/SelectValue.vue';
-import { ref } from 'vue';
+import { onUnmounted, ref, watch } from 'vue';
 import ResizableHandle from './ui/resizable/ResizableHandle.vue';
 import SelectContent from './ui/select/SelectContent.vue';
 import SelectItem from './ui/select/SelectItem.vue';
@@ -89,6 +89,12 @@ import { VueMonacoEditor } from '@guolao/vue-monaco-editor';
 import axios from 'axios';
 import { toast } from 'vue3-toastify';
 import AppLoading from './AppLoading.vue';
+import { useAuthStore } from '@/stores/auth';
+import { Peer } from 'peerjs';
+
+const { call } = defineProps({
+    call: Object,
+});
 
 const supportedLanguages = [
     ['go', 'Go'],
@@ -98,9 +104,45 @@ const supportedLanguages = [
 ];
 
 const isLoading = ref(true);
+const authUser = useAuthStore().authUser;
 const selectedQuestion = ref({});
 const language = ref(supportedLanguages[0][0]);
 const code = ref('');
+
+const peer = new Peer(authUser.uuid);
+let connections = [];
+
+const subscription = call.state.participants$.subscribe((p) => {
+    connections = [];
+
+    for (const participant of p) {
+        if (participant.userId === authUser.uuid) {
+            continue;
+        }
+
+        const conn = peer.connect(participant.userId);
+        connections.push(conn);
+    }
+});
+
+peer.on('connection', (conn) => {
+    conn.on('data', (data) => {
+        code.value = data;
+    });
+});
+
+watch(code, (newCode) => {
+    // Broadcast the updated code to all participants except the sender
+    for (const conn of connections) {
+        conn.send(newCode);
+    }
+});
+
+onUnmounted(() => {
+    if (subscription) {
+        subscription.unsubscribe();
+    }
+});
 
 axios
     .get(import.meta.env.VITE_LEET_CODE_API_URL + '/dailyQuestion')
