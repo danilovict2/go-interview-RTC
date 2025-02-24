@@ -38,9 +38,15 @@ docker compose up --build
 
 ### Run locally
 
-First, open the `.env` file and comment out the existing `DATABASE_DSN` line. Uncomment the alternative `DATABASE_DSN` line. Ensure you have created the `interview-rtc` database in PostgreSQL.
+1. Create the `interview-rtc` database in PostgreSQL.
+2. Open the `.env` file located in the project root directory. Comment out the current `DATABASE_DSN` line and uncomment the alternative `DATABASE_DSN` line.
+3. Install Vue Dependencies
 
-Then, run the following command:
+```bash
+cd assets/vue
+npm install
+```
+4. Run the Application
 
 ```bash
 make run
