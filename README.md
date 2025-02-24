@@ -21,13 +21,13 @@ cd go-interview-RTC
 
 ```bash
 cp .env.example .env
-cp /assets/vue/.env.example .env
+cp /assets/vue/.env.example assets/vue/.env
 ```
 
 ### Create a Stream Account
 
 1. Sign up for a [Stream](https://getstream.io/) account.
-2. Obtain your API keys from the Stream dashboard.
+2. Create an application on the Stream dashboard and copy your API keys.
 3. Open the `.env` files and paste the keys into the corresponding fields.
 
 ### Run with Docker
