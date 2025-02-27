@@ -21,7 +21,7 @@ cd go-interview-RTC
 
 ```bash
 cp .env.example .env
-cp /assets/vue/.env.example assets/vue/.env
+cp assets/vue/.env.example assets/vue/.env
 ```
 
 ### Create a Stream Account
