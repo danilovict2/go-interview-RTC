@@ -13,8 +13,8 @@ Ensure you have either [Docker](https://www.docker.com/get-started) or the follo
 ### Clone the project
 
 ```bash
-git clone https://github.com/danilovict2/go-interview-RTC.git
-cd go-interview-RTC
+git clone https://github.com/danilovict2/interview-platform.git
+cd interview-platform
 ```
 
 ### Set environment variables
